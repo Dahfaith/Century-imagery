@@ -32,16 +32,29 @@ export function SelectedWork() {
           </Link>
         </div>
 
-        {/* Uniform Project Showcase Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
-          {selectedProjects.map((project, idx) => (
+        {/* Asymmetric Editorial Portfolio Composition */}
+        <div className="space-y-10 sm:space-y-14">
+          {/* Prominent Lead Feature */}
+          {selectedProjects[0] && (
             <ProjectCard
-              key={project.slug}
-              project={project}
-              layout="standard"
-              index={idx}
+              key={selectedProjects[0].slug}
+              project={selectedProjects[0]}
+              layout="lead"
+              index={0}
             />
-          ))}
+          )}
+
+          {/* Secondary Projects: Alternating 2-Column Asymmetric Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+            {selectedProjects.slice(1, 4).map((project, idx) => (
+              <ProjectCard
+                key={project.slug}
+                project={project}
+                layout="standard"
+                index={idx + 1}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Section Footer Link */}

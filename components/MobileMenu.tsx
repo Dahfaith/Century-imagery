@@ -53,24 +53,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 bg-brand-black/95 backdrop-blur-xl flex flex-col justify-between p-6 sm:p-10"
+          className="fixed inset-0 z-50 bg-brand-black/98 flex flex-col justify-between p-6 sm:p-10 select-none"
         >
-          {/* Ambient background glow */}
-          <div
-            className="pointer-events-none absolute -top-20 -right-20 w-80 h-80 rounded-full bg-brand-purple-glow/40 blur-3xl"
-            aria-hidden="true"
-          />
-          <div
-            className="pointer-events-none absolute bottom-10 -left-20 w-72 h-72 rounded-full bg-brand-gold/10 blur-3xl"
-            aria-hidden="true"
-          />
-
           {/* Top header inside drawer */}
-          <div className="flex items-center justify-between border-b border-brand-border/60 pb-5 relative z-10">
+          <div className="flex items-center justify-between border-b border-brand-border/40 pb-5 relative z-10">
             <BrandLogo size="sm" variant="gold" linkToHome />
             <button
               onClick={onClose}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold text-brand-cream hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2.5 rounded-full border border-brand-border/60 bg-brand-surface hover:border-brand-gold text-brand-cream hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />

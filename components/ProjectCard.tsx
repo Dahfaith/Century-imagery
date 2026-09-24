@@ -10,61 +10,83 @@ import { cn } from "@/lib/utils";
 
 interface ProjectCardProps {
   project: Project;
-  layout?: "hero-featured" | "tall" | "standard";
+  layout?: "lead" | "standard" | "compact";
   index?: number;
 }
 
 export function ProjectCard({ project, layout = "standard", index = 0 }: ProjectCardProps) {
-  if (layout === "hero-featured") {
+  // 1. Lead Asymmetric Feature Card
+  if (layout === "lead") {
     return (
       <motion.article
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.7, delay: index * 0.1 }}
-        className="group relative w-full rounded-2xl overflow-hidden bg-brand-surface border border-brand-border/70 hover:border-brand-gold/60 transition-all duration-500 shadow-2xl"
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        className="group relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-brand-surface/60 border border-brand-border/60 hover:border-brand-gold/60 transition-all duration-500 shadow-2xl"
       >
-        <Link href={`/work/${project.slug}`} className="block relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden">
-          {/* Main Hero Visual */}
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-            style={{
-              backgroundImage: `url(${project.heroImage}), url('https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1800&q=85')`,
-            }}
-          />
-          {/* Cinematic Vignette */}
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors duration-500" />
+        <Link href={`/work/${project.slug}`} className="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
+          {/* Dominant Cinematic Visual (7 cols on desktop) */}
+          <div className="lg:col-span-8 relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-brand-surface">
+            {project.heroVideo ? (
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                poster={project.heroImage}
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              >
+                <source src={project.heroVideo} />
+              </video>
+            ) : (
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                style={{
+                  backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
+                }}
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
 
-          {/* Top Metadata */}
-          <div className="absolute top-5 sm:top-8 inset-x-5 sm:inset-x-8 flex items-center justify-between z-10">
-            <span className="px-3 py-1 rounded-full border border-brand-gold/40 bg-brand-black/70 backdrop-blur-md text-brand-gold text-[10px] sm:text-xs font-mono tracking-wider uppercase">
-              {project.category}
-            </span>
-            <span className="text-xs font-mono text-brand-cream/80 bg-brand-black/50 px-3 py-1 rounded-full backdrop-blur-md">
-              {project.year} &bull; {project.location}
-            </span>
+            {/* Visual Tag */}
+            <div className="absolute top-4 left-4 z-10">
+              <span className="px-3 py-1 rounded-full border border-brand-gold/40 bg-brand-black/75 backdrop-blur-sm text-brand-gold text-[10px] sm:text-xs font-mono font-medium tracking-[0.2em] uppercase">
+                FEATURED WORK
+              </span>
+            </div>
           </div>
 
-          {/* Bottom Project Info */}
-          <div className="absolute bottom-5 sm:bottom-8 inset-x-5 sm:inset-x-8 flex flex-col md:flex-row md:items-end justify-between gap-4 z-10">
-            <div className="space-y-2 max-w-2xl">
-              <div className="text-[11px] font-mono text-brand-gold tracking-widest uppercase">
-                Featured Project
+          {/* Editorial Content Stack (4 cols on desktop) */}
+          <div className="lg:col-span-4 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-6 bg-brand-surface/40">
+            <div className="space-y-4">
+              {/* 1. Category */}
+              <div className="text-[11px] font-mono font-medium uppercase tracking-[0.22em] text-brand-gold">
+                {project.category}
               </div>
-              <h3 className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-brand-cream uppercase tracking-tight group-hover:text-brand-gold transition-colors">
+
+              {/* 2. Project Title */}
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-brand-cream uppercase tracking-tight group-hover:text-brand-gold transition-colors duration-300 leading-tight">
                 {project.title}
               </h3>
-              <p className="text-xs sm:text-sm text-brand-muted line-clamp-2 max-w-xl font-sans font-normal">
+
+              {/* 3. Year / Location */}
+              <div className="text-xs font-mono font-medium text-brand-cream/60 uppercase tracking-wider">
+                {project.year} &bull; {project.location}
+              </div>
+
+              {/* 4. Short Description */}
+              <p className="text-xs sm:text-sm text-brand-muted font-sans font-normal leading-relaxed line-clamp-3 pt-1">
                 {project.shortDescription}
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs sm:text-sm font-display font-semibold uppercase tracking-wider text-brand-cream group-hover:text-brand-gold transition-colors self-start md:self-end">
-              <span>View Case Study</span>
-              <div className="w-8 h-8 rounded-full border border-brand-border bg-brand-surface group-hover:border-brand-gold flex items-center justify-center transition-colors">
-                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </div>
+            {/* 5. View Case Study Action */}
+            <div className="pt-4 border-t border-brand-border/40 flex items-center gap-2 text-xs font-display font-semibold uppercase tracking-[0.18em] text-brand-cream group-hover:text-brand-gold transition-colors duration-300">
+              <span>VIEW CASE STUDY</span>
+              <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
             </div>
           </div>
         </Link>
@@ -72,17 +94,17 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
     );
   }
 
-  // Standard Unified Layout
+  // 2. Standard Editorial Card
   return (
     <motion.article
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 25 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay: index * 0.15 }}
-      className="group relative rounded-2xl overflow-hidden bg-brand-surface border border-brand-border/70 hover:border-brand-gold/60 transition-all duration-500 h-full flex flex-col justify-between"
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.7, delay: index * 0.12 }}
+      className="group relative rounded-2xl overflow-hidden bg-brand-surface/50 border border-brand-border/60 hover:border-brand-gold/60 transition-all duration-500 h-full flex flex-col justify-between shadow-xl"
     >
       <Link href={`/work/${project.slug}`} className="flex flex-col h-full justify-between">
-        {/* Visual Container - Fixed Uniform Aspect Ratio */}
+        {/* Dominant Image/Video Frame */}
         <div className="relative w-full aspect-[16/10] overflow-hidden bg-brand-surface">
           {project.heroVideo ? (
             <video
@@ -92,48 +114,56 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
               playsInline
               preload="metadata"
               poster={project.heroImage}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             >
               <source src={project.heroVideo} />
             </video>
           ) : (
             <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               style={{
                 backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
               }}
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-surface via-transparent to-transparent opacity-80 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-surface/90 via-transparent to-transparent opacity-70 pointer-events-none" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
 
           {/* Floating Tag */}
           <div className="absolute top-4 left-4 z-10">
-            <span className="px-2.5 py-1 rounded-full border border-brand-border bg-brand-black/70 backdrop-blur-md text-brand-gold text-[10px] font-mono font-medium tracking-wider uppercase">
+            <span className="px-2.5 py-1 rounded-full border border-brand-border/60 bg-brand-black/75 backdrop-blur-sm text-brand-gold text-[10px] font-mono font-medium tracking-[0.18em] uppercase">
               {project.category}
             </span>
           </div>
 
-          <div className="absolute top-4 right-4 z-10 text-[10px] font-mono font-medium text-zinc-400 bg-brand-black/60 backdrop-blur-md px-2.5 py-1 rounded-full">
+          <div className="absolute top-4 right-4 z-10 text-[10px] font-mono font-medium text-brand-cream/60 bg-brand-black/70 backdrop-blur-sm px-2.5 py-1 rounded-full border border-brand-border/40">
             {project.year}
           </div>
         </div>
 
-        {/* Text Details */}
-        <div className="p-5 sm:p-7 space-y-3 flex-1 flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between gap-2">
-              <h3 className="text-xl sm:text-2xl font-display font-bold text-brand-cream uppercase tracking-tight group-hover:text-brand-gold transition-colors">
-                {project.title}
-              </h3>
-              <ArrowUpRight className="w-5 h-5 text-brand-muted group-hover:text-brand-gold group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
+        {/* Editorial Text Details */}
+        <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
+          <div className="space-y-2.5">
+            {/* 1. Category & Location */}
+            <div className="text-[10px] font-mono font-medium uppercase tracking-[0.2em] text-brand-gold">
+              {project.location}
             </div>
-            <p className="text-xs text-brand-muted line-clamp-2 leading-relaxed font-sans font-normal">
+
+            {/* 2. Project Title */}
+            <h3 className="text-xl sm:text-2xl font-display font-bold text-brand-cream uppercase tracking-tight group-hover:text-brand-gold transition-colors duration-300 leading-snug">
+              {project.title}
+            </h3>
+
+            {/* 3. Short Description */}
+            <p className="text-xs text-brand-muted line-clamp-2 leading-relaxed font-sans font-normal pt-1">
               {project.shortDescription}
             </p>
           </div>
-          <div className="pt-2 flex items-center gap-2 text-[11px] font-mono font-medium text-brand-gold uppercase tracking-wider">
-            <span>{project.location}</span> &bull; <span>{project.services[0]}</span>
+
+          {/* 4. View Case Study Action */}
+          <div className="pt-3 border-t border-brand-border/30 flex items-center justify-between text-xs font-display font-semibold uppercase tracking-[0.16em] text-brand-cream/80 group-hover:text-brand-gold transition-colors duration-300">
+            <span>VIEW CASE STUDY</span>
+            <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
           </div>
         </div>
       </Link>

@@ -16,36 +16,38 @@ export function CategoryFilter({
   onSelectCategory,
 }: CategoryFilterProps) {
   return (
-    <div className="w-full overflow-x-auto scrollbar-none py-2 -my-2 flex items-center gap-2 sm:gap-3">
-      {categories.map((cat) => {
-        const isActive = activeCategory === cat.id;
+    <div className="w-full border-b border-brand-border/40 overflow-x-auto scrollbar-none pb-2">
+      <div className="flex items-center gap-6 sm:gap-8 min-w-max">
+        {categories.map((cat) => {
+          const isActive = activeCategory === cat.id;
 
-        return (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => onSelectCategory(cat.id)}
-            className={cn(
-              "relative px-4 sm:px-5 py-2.5 rounded-full text-xs font-mono font-medium tracking-wider uppercase whitespace-nowrap transition-all duration-300 flex items-center gap-2 flex-shrink-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold",
-              isActive
-                ? "bg-brand-gold text-brand-black font-semibold shadow-lg shadow-brand-gold/20"
-                : "bg-brand-surface border border-brand-border text-brand-muted hover:text-brand-cream hover:border-brand-gold/40"
-            )}
-          >
-            <span>{cat.label}</span>
-            <span
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => onSelectCategory(cat.id)}
               className={cn(
-                "text-[10px] px-1.5 py-0.5 rounded-full",
+                "relative pb-3 text-xs font-mono tracking-[0.18em] uppercase transition-colors duration-200 cursor-pointer flex items-center gap-2 focus:outline-none",
                 isActive
-                  ? "bg-black/20 text-brand-black"
-                  : "bg-brand-black/60 text-brand-muted"
+                  ? "text-brand-gold font-semibold"
+                  : "text-brand-cream/60 hover:text-brand-cream"
               )}
             >
-              {cat.count}
-            </span>
-          </button>
-        );
-      })}
+              <span>{cat.label}</span>
+              <span className="text-[10px] text-zinc-500 font-mono">
+                {cat.count}
+              </span>
+              {isActive && (
+                <motion.div
+                  layoutId="activeFilterUnderline"
+                  className="absolute bottom-0 inset-x-0 h-[2px] bg-brand-gold"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

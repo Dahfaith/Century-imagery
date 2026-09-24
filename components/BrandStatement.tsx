@@ -67,38 +67,32 @@ export function BrandStatement() {
             </motion.p>
           </div>
 
-          {/* Authentic Studio Credentials Bar */}
-          <div className="pt-8 border-t border-brand-border/40 grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
-            <div>
-              <span className="text-2xl sm:text-3xl font-display font-extrabold text-brand-gold block">
+          {/* Compact Editorial Metrics Composition */}
+          <div className="pt-10 border-t border-brand-border/40 grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 text-left">
+            <div className="space-y-1.5">
+              <span className="text-4xl sm:text-5xl font-display font-extrabold text-brand-gold tracking-tight block">
                 400K+
               </span>
-              <span className="text-xs font-mono font-medium text-brand-muted uppercase tracking-wider">
-                Audience Project Views
+              <span className="text-xs font-mono font-medium text-brand-muted uppercase tracking-[0.18em] block">
+                PROJECT VIEWS
               </span>
             </div>
-            <div>
-              <span className="text-2xl sm:text-3xl font-display font-extrabold text-brand-gold block">
-                3 Consecutive Yrs
+
+            <div className="space-y-1.5">
+              <span className="text-4xl sm:text-5xl font-display font-extrabold text-brand-gold tracking-tight block">
+                3 YEARS
               </span>
-              <span className="text-xs font-mono font-medium text-brand-muted uppercase tracking-wider">
-                Oyo State Armed Forces Day
-              </span>
-            </div>
-            <div>
-              <span className="text-2xl sm:text-3xl font-display font-extrabold text-brand-gold block">
-                Primary Architect
-              </span>
-              <span className="text-xs font-mono font-medium text-brand-muted uppercase tracking-wider">
-                Club Rebel Empire, Osogbo
+              <span className="text-xs font-mono font-medium text-brand-muted uppercase tracking-[0.18em] block">
+                OYO STATE ARMED FORCES DAY
               </span>
             </div>
-            <div>
-              <span className="text-2xl sm:text-3xl font-display font-extrabold text-brand-gold block">
-                VIP &amp; Tech
+
+            <div className="space-y-1.5">
+              <span className="text-2xl sm:text-3xl lg:text-4xl font-display font-extrabold text-brand-gold tracking-tight block">
+                PRIMARY ARCHITECT
               </span>
-              <span className="text-xs font-mono font-medium text-brand-muted uppercase tracking-wider">
-                Utiva &bull; DJ Tunez &bull; Cultural Icons
+              <span className="text-xs font-mono font-medium text-brand-muted uppercase tracking-[0.18em] block">
+                CLUB REBEL EMPIRE
               </span>
             </div>
           </div>

@@ -31,18 +31,18 @@ export default function WorkPage() {
           aria-hidden="true"
         />
 
-        <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-gold/30 bg-brand-surface text-brand-gold text-[11px] sm:text-xs font-mono tracking-wider uppercase">
+        <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 relative z-10 space-y-4">
+          <div className="inline-flex items-center gap-2 text-brand-gold text-[10px] sm:text-xs font-mono uppercase tracking-[0.22em]">
             <Film className="w-3.5 h-3.5" />
-            <span>Archive &bull; Century Imagery LLC</span>
+            <span>ARCHIVE &bull; CENTURY IMAGERY LLC</span>
           </div>
 
-          <div className="space-y-4 max-w-4xl">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-display font-extrabold uppercase tracking-tight text-brand-cream leading-[1.02]">
-              SELECTED <span className="text-brand-gold">FILMOGRAPHY</span> &amp; WORKS
+          <div className="space-y-3 max-w-3xl">
+            <h1 className="text-[clamp(2.5rem,6.5vw,5.5rem)] font-display font-extrabold uppercase tracking-tight text-brand-cream leading-[0.95]">
+              THE <span className="text-brand-gold">WORK</span>
             </h1>
-            <p className="text-base sm:text-xl text-brand-muted font-sans font-normal leading-relaxed max-w-2xl">
-              An evolving catalog of commercial campaigns, fashion motion, music visualizers, and documentary storytelling rendered to international cinema standards.
+            <p className="text-base sm:text-lg text-brand-muted font-sans font-normal leading-relaxed max-w-2xl">
+              An evolving catalog of commercial campaigns, fashion motion, music visualizers, and state documentary archives rendered to international cinema standards.
             </p>
           </div>
         </div>

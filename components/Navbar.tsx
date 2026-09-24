@@ -48,7 +48,7 @@ export function Navbar() {
           {/* Desktop Navigation Links */}
           <nav
             aria-label="Main Navigation"
-            className="hidden md:flex items-center gap-8 lg:gap-10"
+            className="hidden md:flex items-center gap-7 lg:gap-9"
           >
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
@@ -57,15 +57,15 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-xs lg:text-sm font-display font-semibold tracking-widest uppercase transition-colors relative py-1",
+                    "text-xs lg:text-[13px] font-display font-semibold tracking-[0.2em] uppercase transition-colors relative py-1",
                     isActive
                       ? "text-brand-gold"
-                      : "text-brand-muted hover:text-brand-cream"
+                      : "text-brand-cream/70 hover:text-brand-cream"
                   )}
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 inset-x-0 h-0.5 bg-brand-gold rounded-full" />
+                    <span className="absolute bottom-0 inset-x-0 h-[2px] bg-brand-gold rounded-full" />
                   )}
                 </Link>
               );
@@ -77,7 +77,7 @@ export function Navbar() {
             {/* Desktop CTA */}
             <Link
               href="/booking"
-              className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-gold hover:bg-brand-gold-light text-brand-black font-display font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:shadow-lg hover:shadow-brand-gold/20 hover:scale-[1.02] active:scale-[0.98]"
+              className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-gold hover:bg-brand-gold-light text-brand-black font-display font-semibold text-xs tracking-[0.18em] uppercase transition-all duration-300 hover:shadow-lg hover:shadow-brand-gold/20 hover:scale-[1.02] active:scale-[0.98]"
             >
               <Sparkles className="w-3.5 h-3.5 fill-brand-black" />
               <span>BOOK A PROJECT</span>
@@ -87,7 +87,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] p-2.5 rounded-lg border border-brand-border bg-brand-surface/90 hover:border-brand-gold/60 text-brand-cream hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
+              className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] p-2.5 rounded-full border border-brand-border/60 bg-brand-surface/80 hover:border-brand-gold/60 text-brand-cream hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               aria-label="Open mobile navigation menu"
             >
               <Menu className="w-5 h-5" />
