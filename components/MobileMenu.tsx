@@ -19,15 +19,18 @@ const navItems = [
 ];
 
 export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
-  // Lock body scroll when mobile menu is open
+  // Lock body & documentElement scroll when mobile menu is open (essential for iOS Safari)
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -52,8 +55,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 bg-brand-black/98 flex flex-col justify-between p-6 sm:p-10 select-none"
+          transition={{ duration: 0.25 }}
+          style={{ backgroundColor: "#080808" }}
+          className="fixed inset-0 z-[9999] bg-[#080808] flex flex-col justify-between p-6 sm:p-10 select-none overflow-y-auto"
         >
           {/* Top header inside drawer */}
           <div className="flex items-center justify-between border-b border-brand-border/40 pb-5 relative z-10">
