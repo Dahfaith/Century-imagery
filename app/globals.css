@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #080808;
+  --foreground: #f5f3ee;
+  --brand-gold: #f5c518;
+  --brand-surface: #121118;
+  --brand-border: #24222e;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    background-color: var(--background);
+    color: var(--foreground);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-figtree), 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    overflow-x: hidden;
+    selection-background-color: #f5c518;
+  }
+
+  ::selection {
+    background-color: #f5c518;
+    color: #080808;
+  }
+
+  /* Custom minimal luxury scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #080808;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #24222e;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #f5c518;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Subtle cinematic noise overlay for depth */
+.cinematic-vignette {
+  background: radial-gradient(
+    circle at center,
+    rgba(14, 7, 26, 0.2) 0%,
+    rgba(8, 8, 8, 0.85) 75%,
+    #080808 100%
+  );
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #ffe580 0%, #f5c518 50%, #cca20c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
