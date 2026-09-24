@@ -100,7 +100,7 @@ export default function ServicesPage() {
                     poster={service.imagePlaceholder}
                     className="w-full h-full object-cover scale-[1.01]"
                   >
-                    <source src={service.videoUrl} />
+                    <source src={service.videoUrl} type={service.videoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
                   </video>
                 ) : (
                   <div
