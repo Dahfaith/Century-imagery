@@ -83,9 +83,9 @@ export function VideoBackground({
         className="absolute inset-0 w-full h-full object-cover object-center"
       >
         {mobileVideoUrl && (
-          <source src={mobileVideoUrl} media="(max-width: 768px)" />
+          <source src={mobileVideoUrl} type={mobileVideoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} media="(max-width: 768px)" />
         )}
-        <source src={desktopVideoUrl} />
+        <source src={desktopVideoUrl} type={desktopVideoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
       </video>
 
       {/* Crisp Cinematic Overlays:

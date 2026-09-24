@@ -38,7 +38,7 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
                 poster={project.heroImage}
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               >
-                <source src={project.heroVideo} />
+                <source src={project.heroVideo} type={project.heroVideo.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
               </video>
             ) : (
               <div
@@ -116,7 +116,7 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
               poster={project.heroImage}
               className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             >
-              <source src={project.heroVideo} />
+              <source src={project.heroVideo} type={project.heroVideo.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
             </video>
           ) : (
             <div

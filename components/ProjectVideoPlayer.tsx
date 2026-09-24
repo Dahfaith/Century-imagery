@@ -70,7 +70,7 @@ export function ProjectVideoPlayer({
         onClick={togglePlay}
         className="w-full h-full object-cover scale-[1.01] cursor-pointer"
       >
-        <source src={videoUrl} />
+        <source src={videoUrl} type={videoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
       </video>
 
       {/* Ambient Vignette */}
