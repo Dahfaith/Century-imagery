@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/supabase/auth'
 import { MediaUploader } from './components/MediaUploader'
-import { DeleteMediaButton, SyncMediaButton } from './components/MediaActions'
-import { Search, Film, Image as ImageIcon, AlertCircle } from 'lucide-react'
+import { MediaCard } from './components/MediaCard'
+import { Search, Film, AlertCircle } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -128,84 +128,9 @@ export default async function MediaPage({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {mediaItems.map((item) => (
-            <div key={item.id} className="bg-brand-surface-card border border-brand-border rounded-xl overflow-hidden group hover:border-brand-gold/30 transition-colors flex flex-col">
-              <div className="aspect-video bg-brand-surface-elevated relative overflow-hidden">
-                {item.media_type === 'video' ? (
-                  item.playback_url ? (
-                    <video 
-                      src={item.playback_url} 
-                      preload="metadata"
-                      poster={item.thumbnail_url?.match(/\.(mp4|webm|mov|m4v)$/i) ? undefined : (item.thumbnail_url || undefined)}
-                      className="w-full h-full object-cover pointer-events-none"
-                      muted
-                      playsInline
-                    />
-                  ) : item.thumbnail_url && !item.thumbnail_url.match(/\.(mp4|webm|mov|m4v)$/i) ? (
-                    <img 
-                      src={item.thumbnail_url} 
-                      alt={item.alt_text || item.filename} 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-brand-muted">
-                      <Film className="w-8 h-8 opacity-40 text-brand-gold" />
-                    </div>
-                  )
-                ) : item.thumbnail_url ? (
-                  <img 
-                    src={item.thumbnail_url} 
-                    alt={item.alt_text || item.filename} 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-brand-muted">
-                    <ImageIcon className="w-8 h-8 opacity-20" />
-                  </div>
-                )}
-                
-                {/* Status Badges */}
-                <div className="absolute top-2 left-2 flex gap-2">
-                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur-md ${
-                    item.status === 'ready' ? 'text-green-400' : 
-                    item.status === 'processing' ? 'text-brand-gold' : 'text-red-400'
-                  }`}>
-                    {item.status}
-                  </span>
-                  {item.duration_seconds && (
-                    <span className="text-[10px] font-mono px-2 py-1 rounded bg-black/70 backdrop-blur-md text-brand-cream">
-                      {Math.floor(item.duration_seconds / 60)}:{(Math.round(item.duration_seconds % 60)).toString().padStart(2, '0')}
-                    </span>
-                  )}
-                </div>
-
-                <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {item.status !== 'ready' && item.provider_asset_id && (
-                    <SyncMediaButton id={item.id} uid={item.provider_asset_id} />
-                  )}
-                  <DeleteMediaButton id={item.id} uid={item.provider_asset_id} provider={item.provider} filename={item.filename} />
-                </div>
-              </div>
-              
-              <div className="p-4 flex-1 flex flex-col">
-                <p className="font-medium text-brand-cream text-sm truncate" title={item.filename}>{item.filename}</p>
-                <div className="flex items-center justify-between mt-2 text-xs text-brand-muted">
-                  <span className="capitalize">{item.media_type}</span>
-                  {item.file_size && (
-                    <span>{(item.file_size / (1024 * 1024)).toFixed(2)} MB</span>
-                  )}
-                </div>
-                
-                {item.playback_url && (
-                  <div className="mt-4 pt-3 border-t border-brand-border">
-                    <p className="text-xs text-brand-muted font-mono truncate" title={item.provider_asset_id}>
-                      UID: {item.provider_asset_id}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
+            <MediaCard key={item.id} item={item} />
           ))}
         </div>
       )}

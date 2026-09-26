@@ -57,3 +57,26 @@ export async function deleteR2Object(key: string) {
   await client.send(command)
   return true
 }
+
+export async function uploadBufferToR2(buffer: Buffer | Uint8Array, filename: string, mimeType: string) {
+  const bucket = process.env.CLOUDFLARE_R2_BUCKET_NAME
+  if (!bucket) throw new Error('Missing CLOUDFLARE_R2_BUCKET_NAME')
+
+  const uniqueId = crypto.randomUUID()
+  const cleanFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_')
+  const key = `${uniqueId}-${cleanFilename}`
+
+  const client = getR2Client()
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: buffer,
+    ContentType: mimeType || 'application/octet-stream',
+  })
+
+  await client.send(command)
+  const publicDomain = (process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN || '').replace(/\/+$/, '')
+  const publicUrl = publicDomain ? `${publicDomain}/${key}` : ''
+
+  return { key, publicUrl }
+}

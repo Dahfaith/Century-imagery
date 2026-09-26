@@ -21,6 +21,7 @@ function getType(ext: string) {
 }
 
 let sql = `-- Legacy Media Seed\n\n`;
+sql += `-- Ensure all existing media rows have thumbnails and playback URLs populated\nUPDATE media SET thumbnail_url = COALESCE(thumbnail_url, provider_url), playback_url = COALESCE(playback_url, provider_url) WHERE thumbnail_url IS NULL OR playback_url IS NULL;\n\n`;
 
 // Map of URL -> generated UUID
 const mediaMap = new Map<string, string>();
@@ -36,18 +37,37 @@ function ensureMedia(url: string | undefined): string | null {
   const type = getType(ext);
   const filename = url.split('/').pop() || 'media';
   
+  let fileSize = 102400; // default 100KB fallback
+  try {
+    const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
+    const localPath = path.join(process.cwd(), 'public', cleanUrl);
+    if (fs.existsSync(localPath)) {
+      fileSize = fs.statSync(localPath).size;
+    }
+  } catch (e) {}
+
+  const mimeType = type === 'video' 
+    ? `video/${ext === 'mov' ? 'mp4' : ext}` 
+    : `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+  
   sql += `
-INSERT INTO media (id, filename, file_size, mime_type, media_type, provider, provider_url, status)
+INSERT INTO media (id, filename, file_size, mime_type, media_type, provider, provider_url, thumbnail_url, playback_url, status)
 VALUES (
   '${id}',
   ${escapeSql(filename)},
-  1024,
-  ${escapeSql(`${type}/${ext}`)},
+  ${fileSize},
+  ${escapeSql(mimeType)},
   '${type}',
   'r2',
   ${escapeSql(url)},
+  ${escapeSql(url)},
+  ${escapeSql(url)},
   'ready'
-) ON CONFLICT (id) DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  file_size = EXCLUDED.file_size,
+  thumbnail_url = EXCLUDED.thumbnail_url,
+  playback_url = EXCLUDED.playback_url,
+  status = 'ready';
 `;
   return id;
 }

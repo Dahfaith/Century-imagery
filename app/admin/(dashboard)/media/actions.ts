@@ -3,8 +3,51 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/supabase/auth'
 import { createDirectUploadUrl, getVideoInfo, deleteVideo } from '@/lib/cloudflare/stream'
-import { createR2PresignedUrl, deleteR2Object } from '@/lib/cloudflare/r2'
+import { createR2PresignedUrl, deleteR2Object, uploadBufferToR2 } from '@/lib/cloudflare/r2'
 import { revalidatePath } from 'next/cache'
+
+export async function uploadDirectFile(formData: FormData) {
+  await requireAuth(['super_admin', 'admin', 'editor'])
+  const supabase = await createClient()
+
+  try {
+    const file = formData.get('file') as File | null
+    const altText = (formData.get('altText') as string) || ''
+
+    if (!file) return { error: 'No file provided' }
+
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    const mimeType = file.type || 'application/octet-stream'
+    const isVideo = mimeType.startsWith('video/') || /\.(mp4|webm|mov|m4v|mkv)$/i.test(file.name)
+
+    const { key, publicUrl } = await uploadBufferToR2(buffer, file.name, mimeType)
+
+    const mediaData = {
+      filename: file.name,
+      original_filename: file.name,
+      media_type: isVideo ? 'video' : 'image',
+      mime_type: mimeType,
+      file_size: file.size,
+      provider: 'cloudflare_r2',
+      provider_asset_id: key,
+      provider_url: publicUrl,
+      thumbnail_url: publicUrl,
+      playback_url: publicUrl,
+      status: 'ready',
+      alt_text: altText,
+    }
+
+    const { data, error } = await (supabase.from('media') as any).insert(mediaData).select().single()
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/', 'layout')
+    revalidatePath('/admin/media')
+    return { success: true, data }
+  } catch (error: any) {
+    return { error: error.message || 'Direct upload failed' }
+  }
+}
 
 export async function getUploadUrl() {
   await requireAuth(['super_admin', 'admin', 'editor'])

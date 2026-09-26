@@ -21,27 +21,46 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
     setErrorMsg('')
   }
 
-  const uploadViaPresignedPut = (uploadUrl: string, fileToUpload: File, contentType: string) => {
+  const uploadViaServerRoute = (fileToUpload: File, alt: string) => {
     return new Promise<void>((resolve, reject) => {
       const xhr = new XMLHttpRequest()
+      const formData = new FormData()
+      formData.append('file', fileToUpload)
+      if (alt) formData.append('altText', alt)
+
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           const percentComplete = (event.loaded / event.total) * 100
           setProgress(Math.round(percentComplete))
         }
       })
+
       xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          resolve()
+          try {
+            const res = JSON.parse(xhr.responseText)
+            if (res.error) {
+              reject(new Error(res.error))
+            } else {
+              resolve()
+            }
+          } catch {
+            resolve()
+          }
         } else {
-          reject(new Error(`Storage upload failed with status ${xhr.status}`))
+          try {
+            const res = JSON.parse(xhr.responseText)
+            reject(new Error(res.error || `Upload failed with status ${xhr.status}`))
+          } catch {
+            reject(new Error(`Upload failed with status ${xhr.status}`))
+          }
         }
       })
-      xhr.addEventListener('error', () => reject(new Error('Network error during storage upload')))
+
+      xhr.addEventListener('error', () => reject(new Error('Network error during upload. Please try again.')))
       xhr.addEventListener('abort', () => reject(new Error('Upload aborted')))
-      xhr.open('PUT', uploadUrl)
-      xhr.setRequestHeader('Content-Type', contentType)
-      xhr.send(fileToUpload)
+      xhr.open('POST', '/api/admin/media/upload')
+      xhr.send(formData)
     })
   }
 
@@ -49,95 +68,19 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
     if (!file) return
 
     try {
-      setStatus('requesting')
+      setStatus('uploading')
+      setProgress(0)
       setErrorMsg('')
 
-      const isImage = file.type.startsWith('image/')
-
-      if (isImage) {
-        // --- IMAGE UPLOAD TO R2 ---
-        const mime = file.type || 'image/jpeg'
-        const urlRes = await getR2UploadUrl(file.name, mime)
-        if (urlRes.error) throw new Error(urlRes.error)
-        if (!urlRes.data) throw new Error('Failed to get R2 upload URL')
-
-        const { uploadUrl, key, publicUrl } = urlRes.data
-        setStatus('uploading')
-
-        await uploadViaPresignedPut(uploadUrl, file, mime)
-
-        setStatus('verifying')
-        const saveRes = await saveR2Media(key, publicUrl, file.name, file.size, mime, altText)
-        if (saveRes.error) throw new Error(saveRes.error)
-
-      } else {
-        // --- VIDEO UPLOAD ---
-        let streamSuccess = false
-
-        // Attempt Cloudflare Stream first if configured
-        try {
-          const urlRes = await getUploadUrl()
-          if (!urlRes.error && urlRes.data?.uploadURL) {
-            const { uploadURL, uid } = urlRes.data
-            setStatus('uploading')
-
-            await new Promise<void>((resolve, reject) => {
-              const xhr = new XMLHttpRequest()
-              xhr.upload.addEventListener('progress', (event) => {
-                if (event.lengthComputable) {
-                  const percentComplete = (event.loaded / event.total) * 100
-                  setProgress(Math.round(percentComplete))
-                }
-              })
-              xhr.addEventListener('load', () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                  resolve()
-                } else {
-                  reject(new Error(`Stream upload failed with status ${xhr.status}`))
-                }
-              })
-              xhr.addEventListener('error', () => reject(new Error('Network error during upload')))
-              xhr.addEventListener('abort', () => reject(new Error('Upload aborted')))
-              xhr.open('POST', uploadURL)
-              const formData = new FormData()
-              formData.append('file', file)
-              xhr.send(formData)
-            })
-
-            setStatus('verifying')
-            const saveRes = await verifyAndSaveVideo(uid, file.name, file.size, altText)
-            if (saveRes.error) throw new Error(saveRes.error)
-            streamSuccess = true
-          }
-        } catch (streamErr: any) {
-          console.warn('Cloudflare Stream unavailable, falling back to Cloudflare R2 storage:', streamErr?.message)
-          streamSuccess = false
-        }
-
-        // If Cloudflare Stream was not enabled or failed, upload video to Cloudflare R2!
-        if (!streamSuccess) {
-          const mime = file.type || 'video/mp4'
-          const r2Res = await getR2UploadUrl(file.name, mime)
-          if (r2Res.error) throw new Error(r2Res.error)
-          if (!r2Res.data) throw new Error('Failed to get storage upload URL')
-
-          const { uploadUrl, key, publicUrl } = r2Res.data
-          setStatus('uploading')
-
-          await uploadViaPresignedPut(uploadUrl, file, mime)
-
-          setStatus('verifying')
-          const saveRes = await saveR2Media(key, publicUrl, file.name, file.size, mime, altText)
-          if (saveRes.error) throw new Error(saveRes.error)
-        }
-      }
+      await uploadViaServerRoute(file, altText)
 
       setStatus('success')
       setTimeout(() => {
         setIsOpen(false)
         reset()
         if (onComplete) onComplete()
-      }, 1500)
+        window.location.reload()
+      }, 1200)
 
     } catch (err: any) {
       console.error(err)
