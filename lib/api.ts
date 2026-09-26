@@ -222,7 +222,7 @@ function mapProject(dbProject: any): PublicProject {
     .map((pm: any) => pm.media ? getMediaUrl(pm.media) : null)
     .filter(Boolean)
 
-  const finalGallery = galleryItems.length > 0 ? galleryItems : (canonical?.gallery || [])
+  const finalGallery = Array.from(new Set(galleryItems.length > 0 ? galleryItems : (canonical?.gallery || [])))
 
   // Parse credits from JSON field or description
   let credits: { role: string; name: string }[] = []
