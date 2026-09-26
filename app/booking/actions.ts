@@ -18,7 +18,8 @@ interface BookingData {
 }
 
 export async function submitBooking(formData: BookingData) {
-  // Validate input
+  try {
+    // Validate input
   if (!formData.name || !formData.email || !formData.phone || !formData.service || !formData.preferred_date || !formData.location || !formData.message) {
     return { error: 'Validation failed: Missing required fields.' }
   }
@@ -167,4 +168,8 @@ export async function submitBooking(formData: BookingData) {
   }
 
   return { success: true, referenceCode: refCode }
+} catch (globalError: any) {
+  console.error('CRITICAL ACTION ERROR:', globalError);
+  return { error: `Server Crash: ${globalError.message || 'Unknown error'}` };
+}
 }
