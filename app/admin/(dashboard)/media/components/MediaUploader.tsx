@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { getUploadUrl, verifyAndSaveVideo, getR2UploadUrl, saveR2Media } from '../actions'
-import { Upload, X, Film, ImageIcon, Loader2 } from 'lucide-react'
+import { Upload, X, Film, ImageIcon, Loader2, AlertCircle, Copy, Check } from 'lucide-react'
 
 export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -11,7 +11,23 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
   const [status, setStatus] = useState<'idle' | 'requesting' | 'uploading' | 'verifying' | 'success' | 'error'>('idle')
   const [progress, setProgress] = useState(0)
   const [errorMsg, setErrorMsg] = useState('')
+  const [isCorsError, setIsCorsError] = useState(false)
+  const [corsCopied, setCorsCopied] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const CORS_POLICY_JSON = JSON.stringify([
+    {
+      AllowedOrigins: [
+        "https://centuryimagery.com",
+        "https://www.centuryimagery.com",
+        "http://localhost:3000"
+      ],
+      AllowedMethods: ["GET", "PUT", "POST", "HEAD"],
+      AllowedHeaders: ["*"],
+      ExposeHeaders: ["ETag"],
+      MaxAgeSeconds: 3600
+    }
+  ], null, 2)
 
   const reset = () => {
     setFile(null)
@@ -19,6 +35,7 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
     setStatus('idle')
     setProgress(0)
     setErrorMsg('')
+    setIsCorsError(false)
   }
 
   const uploadViaServerRoute = (fileToUpload: File, alt: string) => {
@@ -64,6 +81,32 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
     })
   }
 
+  const uploadViaPresignedPut = (uploadUrl: string, fileToUpload: File, contentType: string) => {
+    return new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100
+          setProgress(Math.round(percentComplete))
+        }
+      })
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve()
+        } else {
+          reject(new Error(`Storage upload failed with status ${xhr.status}`))
+        }
+      })
+      xhr.addEventListener('error', () => reject(new Error('CORS_ERROR')))
+      xhr.addEventListener('abort', () => reject(new Error('Upload aborted')))
+      xhr.open('PUT', uploadUrl)
+      if (contentType) {
+        xhr.setRequestHeader('Content-Type', contentType)
+      }
+      xhr.send(fileToUpload)
+    })
+  }
+
   const handleUpload = async () => {
     if (!file) return
 
@@ -71,8 +114,26 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
       setStatus('uploading')
       setProgress(0)
       setErrorMsg('')
+      setIsCorsError(false)
 
-      await uploadViaServerRoute(file, altText)
+      // Files <= 4MB can safely upload via server route (bypasses CORS completely)
+      if (file.size <= 4 * 1024 * 1024) {
+        await uploadViaServerRoute(file, altText)
+      } else {
+        // Files > 4MB (like videos) exceed Vercel's 4.5MB serverless limit (status 413)
+        // Must upload directly to Cloudflare R2 via presigned URL
+        const mime = file.type || (file.name.match(/\.(mp4|webm|mov|m4v)$/i) ? 'video/mp4' : 'application/octet-stream')
+        const urlRes = await getR2UploadUrl(file.name, mime)
+        if (urlRes.error) throw new Error(urlRes.error)
+        if (!urlRes.data) throw new Error('Failed to get storage upload URL')
+
+        const { uploadUrl, key, publicUrl } = urlRes.data
+        await uploadViaPresignedPut(uploadUrl, file, mime)
+
+        setStatus('verifying')
+        const saveRes = await saveR2Media(key, publicUrl, file.name, file.size, mime, altText)
+        if (saveRes.error) throw new Error(saveRes.error)
+      }
 
       setStatus('success')
       setTimeout(() => {
@@ -85,8 +146,19 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
     } catch (err: any) {
       console.error(err)
       setStatus('error')
-      setErrorMsg(err.message || 'An unexpected error occurred during upload.')
+      if (err.message === 'CORS_ERROR') {
+        setIsCorsError(true)
+        setErrorMsg('Upload blocked by Cloudflare R2 CORS. Direct video uploads over 4.5 MB require a 1-time CORS policy in your Cloudflare dashboard.')
+      } else {
+        setErrorMsg(err.message || 'An unexpected error occurred during upload.')
+      }
     }
+  }
+
+  const copyCorsPolicy = () => {
+    navigator.clipboard.writeText(CORS_POLICY_JSON)
+    setCorsCopied(true)
+    setTimeout(() => setCorsCopied(false), 2500)
   }
 
   if (!isOpen) {
@@ -122,8 +194,40 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
           {status === 'idle' || status === 'error' ? (
             <>
               {status === 'error' && (
-                <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs sm:text-sm font-sans break-words">
-                  {errorMsg}
+                <div className="space-y-3">
+                  <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs sm:text-sm font-sans break-words">
+                    {errorMsg}
+                  </div>
+
+                  {isCorsError && (
+                    <div className="p-4 rounded-xl bg-brand-gold/10 border border-brand-gold/30 space-y-3 text-left">
+                      <div className="flex items-center gap-2 text-brand-gold font-medium text-xs sm:text-sm">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <span>Cloudflare R2 CORS Setup Required for Large Videos</span>
+                      </div>
+                      <p className="text-xs text-brand-muted leading-relaxed">
+                        Hosting platforms limit server uploads to 4.5 MB. Videos over 4.5 MB upload directly from your browser to Cloudflare R2, which requires a quick 1-time CORS policy in your Cloudflare dashboard:
+                      </p>
+                      <ol className="text-xs text-brand-cream/90 space-y-1 list-decimal list-inside font-mono text-[11px]">
+                        <li>Open Cloudflare Dashboard &rarr; <strong>R2</strong> &rarr; <strong>century-imagery-media</strong></li>
+                        <li>Click <strong>Settings</strong> &rarr; scroll to <strong>CORS Policy</strong> &rarr; <strong>Add CORS Policy</strong></li>
+                        <li>Paste the JSON policy below and click <strong>Save</strong></li>
+                      </ol>
+                      <div className="relative">
+                        <pre className="p-2.5 bg-black/70 rounded-lg text-[10px] font-mono text-brand-gold overflow-x-auto border border-brand-border max-h-36">
+                          {CORS_POLICY_JSON}
+                        </pre>
+                        <button
+                          type="button"
+                          onClick={copyCorsPolicy}
+                          className="absolute top-2 right-2 px-2.5 py-1 bg-brand-gold text-brand-black text-[10px] font-bold rounded flex items-center gap-1 hover:bg-white transition-colors"
+                        >
+                          {corsCopied ? <Check className="w-3 h-3 text-green-700" /> : <Copy className="w-3 h-3" />}
+                          <span>{corsCopied ? 'Copied!' : 'Copy Policy'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               

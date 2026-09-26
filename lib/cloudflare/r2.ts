@@ -32,13 +32,12 @@ export async function createR2PresignedUrl(filename: string, mimeType: string) {
   const command = new PutObjectCommand({
     Bucket: bucket,
     Key: key,
-    ContentType: mimeType,
   })
 
   // URL expires in 15 minutes
   const uploadUrl = await getSignedUrl(client, command, { expiresIn: 900 })
 
-  const publicDomain = process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN
+  const publicDomain = (process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN || '').replace(/\/+$/, '')
   const publicUrl = publicDomain ? `${publicDomain}/${key}` : ''
 
   return { uploadUrl, key, publicUrl }
