@@ -22,8 +22,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverActions: {
-    allowedOrigins: ['centuryimagery.com', 'www.centuryimagery.com', 'century-imagery.vercel.app']
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['centuryimagery.com', 'www.centuryimagery.com', 'century-imagery.vercel.app']
+    }
   },
   async redirects() {
     return [
