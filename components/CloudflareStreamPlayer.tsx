@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Stream } from "@cloudflare/stream-react";
+import ReactPlayer from "react-player";
 
 interface CloudflareStreamPlayerProps {
   videoId: string;
@@ -50,8 +51,9 @@ export function CloudflareStreamPlayer({
     }
   }, [autoplay, muted, videoId]);
 
-  // If the videoId is a full URL or local path, we render a standard video tag
+  // If the videoId is a full URL or local path, we render a standard video tag or ReactPlayer
   if (videoId.includes("http") || videoId.includes("/") || videoId.endsWith(".mp4") || videoId.toLowerCase().endsWith(".mov")) {
+    const isYouTubeOrVimeo = videoId.includes('youtube.com') || videoId.includes('youtu.be') || videoId.includes('vimeo.com');
     const mp4Url = videoId.toLowerCase().endsWith(".mov")
       ? videoId.replace(/\.mov$/i, ".mp4")
       : null;
@@ -68,29 +70,53 @@ export function CloudflareStreamPlayer({
 
     return (
       <div className={`relative w-full h-full overflow-hidden bg-brand-surface ${className}`}>
-        <video
-          ref={videoRef}
-          autoPlay={autoplay}
-          muted={muted}
-          loop={loop}
-          controls={controls}
-          playsInline
-          preload="metadata"
-          onPlaying={() => setIsPlaying(true)}
-          onCanPlay={() => setIsPlaying(true)}
-          onError={() => setHasError(true)}
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          {mp4Url && <source src={mp4Url} type="video/mp4" />}
-          <source src={videoId} type={videoId.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
-        </video>
+        {isYouTubeOrVimeo ? (
+          <div className="absolute inset-0 w-full h-full pointer-events-auto">
+            <ReactPlayer
+              url={videoId}
+              playing={autoplay}
+              muted={muted}
+              loop={loop}
+              controls={controls}
+              playsinline={true}
+              width="100%"
+              height="100%"
+              onPlay={() => setIsPlaying(true)}
+              onError={() => setHasError(true)}
+              config={{
+                youtube: {
+                  playerVars: { modestbranding: 1, rel: 0, showinfo: 0 }
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <video
+            ref={videoRef}
+            autoPlay={autoplay}
+            muted={muted}
+            loop={loop}
+            controls={controls}
+            playsInline
+            preload="metadata"
+            onPlaying={() => setIsPlaying(true)}
+            onCanPlay={() => setIsPlaying(true)}
+            onError={() => setHasError(true)}
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            {mp4Url && <source src={mp4Url} type="video/mp4" />}
+            <source src={videoId} type={videoId.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
+          </video>
+        )}
 
         {/* Fallback/Poster overlay - Stays visible until the video is actually playing! */}
-        <div
-          className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out ${isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-          style={{ backgroundImage: `url(${fallbackPoster})` }}
-          aria-hidden="true"
-        />
+        {(!isYouTubeOrVimeo || (!isPlaying && poster)) && (
+          <div
+            className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out ${isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+            style={{ backgroundImage: `url(${fallbackPoster})` }}
+            aria-hidden="true"
+          />
+        )}
       </div>
     );
   }

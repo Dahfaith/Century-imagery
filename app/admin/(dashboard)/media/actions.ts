@@ -214,3 +214,31 @@ export async function saveImageMedia(key: string, publicUrl: string, filename: s
   return saveR2Media(key, publicUrl, filename, fileSize, mimeType, altText)
 }
 
+export async function saveExternalMedia(url: string, filename: string, altText: string) {
+  await requireAuth(['super_admin', 'admin', 'editor'])
+  const supabase = await createClient()
+
+  try {
+    const isVideo = url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com') || /\.(mp4|webm|mov|m4v|mkv)$/i.test(url)
+    const mediaData = {
+      filename: filename || 'External Link',
+      original_filename: filename || 'External Link',
+      media_type: isVideo ? 'video' : 'image',
+      provider: 'external',
+      provider_url: url,
+      playback_url: url,
+      status: 'ready',
+      alt_text: altText,
+    }
+
+    const { error } = await (supabase.from('media') as any).insert(mediaData)
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/', 'layout')
+    revalidatePath('/admin/media')
+    return { success: true }
+  } catch (error: any) {
+    return { error: error.message }
+  }
+}
+

@@ -107,7 +107,32 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
     })
   }
 
+  const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file')
+  const [externalUrl, setExternalUrl] = useState('')
+  const [externalName, setExternalName] = useState('')
+
   const handleUpload = async () => {
+    if (uploadMode === 'url') {
+      if (!externalUrl) return
+      setStatus('verifying')
+      try {
+        const { saveExternalMedia } = await import('../actions')
+        const res = await saveExternalMedia(externalUrl, externalName || 'External Media', altText)
+        if (res.error) throw new Error(res.error)
+        setStatus('success')
+        setTimeout(() => {
+          setIsOpen(false)
+          reset()
+          if (onComplete) onComplete()
+          window.location.reload()
+        }, 1200)
+      } catch (err: any) {
+        setStatus('error')
+        setErrorMsg(err.message || 'Failed to save external link.')
+      }
+      return
+    }
+
     if (!file) return
 
     try {
@@ -231,28 +256,72 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
                 </div>
               )}
               
-              <div 
-                className="border-2 border-dashed border-brand-border rounded-xl p-6 sm:p-8 text-center cursor-pointer hover:border-brand-gold/50 hover:bg-brand-surface-elevated transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  accept="video/*,image/*" 
-                  className="hidden" 
-                />
-                <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-brand-muted mx-auto mb-3" />
-                <p className="text-brand-cream font-medium text-sm sm:text-base">Select a video or image file</p>
-                <p className="text-brand-muted text-xs sm:text-sm mt-1">Direct upload to high-speed Cloudflare storage</p>
-                {file && (
-                  <div className="mt-3 p-2.5 bg-brand-surface-card rounded border border-brand-border text-brand-gold text-xs sm:text-sm truncate">
-                    {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
-                  </div>
-                )}
+              <div className="flex bg-brand-surface-elevated border border-brand-border rounded-lg p-1">
+                <button
+                  type="button"
+                  onClick={() => setUploadMode('file')}
+                  className={`flex-1 py-2 text-xs font-medium rounded-md transition-colors ${uploadMode === 'file' ? 'bg-brand-gold text-brand-black shadow-sm' : 'text-brand-muted hover:text-brand-cream'}`}
+                >
+                  Upload File
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadMode('url')}
+                  className={`flex-1 py-2 text-xs font-medium rounded-md transition-colors ${uploadMode === 'url' ? 'bg-brand-gold text-brand-black shadow-sm' : 'text-brand-muted hover:text-brand-cream'}`}
+                >
+                  YouTube / External URL
+                </button>
               </div>
 
-              {file && (
+              {uploadMode === 'file' ? (
+                <>
+                  <div 
+                    className="border-2 border-dashed border-brand-border rounded-xl p-6 sm:p-8 text-center cursor-pointer hover:border-brand-gold/50 hover:bg-brand-surface-elevated transition-colors"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      accept="video/*,image/*" 
+                      className="hidden" 
+                    />
+                    <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-brand-muted mx-auto mb-3" />
+                    <p className="text-brand-cream font-medium text-sm sm:text-base">Select a video or image file</p>
+                    <p className="text-brand-muted text-xs sm:text-sm mt-1">Direct upload to high-speed Cloudflare storage</p>
+                    {file && (
+                      <div className="mt-3 p-2.5 bg-brand-surface-card rounded border border-brand-border text-brand-gold text-xs sm:text-sm truncate">
+                        {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4 bg-brand-surface-card border border-brand-border rounded-xl p-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-brand-muted uppercase tracking-wider block">Media URL *</label>
+                    <input
+                      type="url"
+                      value={externalUrl}
+                      onChange={(e) => setExternalUrl(e.target.value)}
+                      placeholder="https://youtube.com/watch?v=..."
+                      className="w-full bg-brand-surface-elevated border border-brand-border text-brand-cream px-3 py-2 rounded-lg focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 text-xs sm:text-sm transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-brand-muted uppercase tracking-wider block">Reference Name *</label>
+                    <input
+                      type="text"
+                      value={externalName}
+                      onChange={(e) => setExternalName(e.target.value)}
+                      placeholder="e.g. Hero Video YouTube"
+                      className="w-full bg-brand-surface-elevated border border-brand-border text-brand-cream px-3 py-2 rounded-lg focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 text-xs sm:text-sm transition-colors"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {(file || uploadMode === 'url') && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-brand-muted uppercase tracking-wider block">Alt Text (Optional)</label>
                   <input
@@ -268,10 +337,10 @@ export function MediaUploader({ onComplete }: { onComplete?: () => void }) {
               <div className="flex justify-end pt-2">
                 <button
                   onClick={handleUpload}
-                  disabled={!file}
+                  disabled={(uploadMode === 'file' && !file) || (uploadMode === 'url' && !externalUrl)}
                   className="w-full sm:w-auto bg-brand-gold text-brand-black px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-center"
                 >
-                  Start Upload
+                  {uploadMode === 'file' ? 'Start Upload' : 'Save Link'}
                 </button>
               </div>
             </>

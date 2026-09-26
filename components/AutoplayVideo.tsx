@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
+import ReactPlayer from "react-player";
 import { cn } from "@/lib/utils";
 
 interface AutoplayVideoProps {
@@ -84,27 +85,54 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
     <div ref={containerRef} className={cn("relative w-full h-full overflow-hidden bg-brand-surface", className)}>
       {/* Video element */}
       {!hasError && src ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload={isInView ? "metadata" : "none"}
-          onPlaying={() => setIsPlaying(true)}
-          onCanPlay={() => setIsPlaying(true)}
-          onError={() => {
-            setHasError(true);
-            setIsPlaying(false);
-          }}
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          {mp4Src && <source src={mp4Src} type="video/mp4" />}
-          <source
-            src={src}
-            type={src.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"}
-          />
-        </video>
+        (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')) ? (
+          <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden scale-[1.3]">
+            <ReactPlayer
+              url={src}
+              playing={isInView}
+              muted={true}
+              loop={true}
+              playsinline={true}
+              width="100%"
+              height="100%"
+              onPlay={() => setIsPlaying(true)}
+              onError={() => {
+                setHasError(true);
+                setIsPlaying(false);
+              }}
+              config={{
+                youtube: {
+                  playerVars: { modestbranding: 1, rel: 0, controls: 0, showinfo: 0, disablekb: 1 }
+                },
+                vimeo: {
+                  playerOptions: { background: 1, transparent: 0 }
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload={isInView ? "metadata" : "none"}
+            onPlaying={() => setIsPlaying(true)}
+            onCanPlay={() => setIsPlaying(true)}
+            onError={() => {
+              setHasError(true);
+              setIsPlaying(false);
+            }}
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            {mp4Src && <source src={mp4Src} type="video/mp4" />}
+            <source
+              src={src}
+              type={src.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"}
+            />
+          </video>
+        )
       ) : null}
       
       {/* Fallback/Poster overlay - Stays visible until the video is actually playing to hide buffering black screens! */}
