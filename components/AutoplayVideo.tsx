@@ -82,7 +82,7 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
 
   return (
     <div ref={containerRef} className={cn("relative w-full h-full overflow-hidden bg-brand-surface", className)}>
-      {/* Video element: only preloaded and played when in view */}
+      {/* Video element */}
       {!hasError && src ? (
         <video
           ref={videoRef}
@@ -90,14 +90,14 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
           loop
           muted
           playsInline
-          preload={isInView ? "auto" : "none"}
-          poster={fallbackPoster}
+          preload={isInView ? "metadata" : "none"}
           onPlaying={() => setIsPlaying(true)}
+          onCanPlay={() => setIsPlaying(true)}
           onError={() => {
             setHasError(true);
             setIsPlaying(false);
           }}
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         >
           {mp4Src && <source src={mp4Src} type="video/mp4" />}
           <source
@@ -105,14 +105,19 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
             type={src.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"}
           />
         </video>
-      ) : (
-        <div
-          className="w-full h-full bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${fallbackPoster}), url('/brand/hero-mockup-gold.png')`,
-          }}
-        />
-      )}
+      ) : null}
+      
+      {/* Fallback/Poster overlay - Stays visible until the video is actually playing to hide buffering black screens! */}
+      <div
+        className={cn(
+          "absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out",
+          isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
+        )}
+        style={{
+          backgroundImage: `url(${fallbackPoster}), url('/brand/hero-mockup-gold.png')`,
+        }}
+        aria-hidden="true"
+      />
     </div>
   );
 }

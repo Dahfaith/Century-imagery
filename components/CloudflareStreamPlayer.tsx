@@ -23,7 +23,7 @@ export function CloudflareStreamPlayer({
   className = "",
 }: CloudflareStreamPlayerProps) {
   const [hasError, setHasError] = useState(false);
-
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   React.useEffect(() => {
@@ -34,10 +34,10 @@ export function CloudflareStreamPlayer({
     video.playsInline = true;
     const playPromise = video.play();
     if (playPromise !== undefined) {
-      playPromise.catch(() => {
+      playPromise.then(() => setIsPlaying(true)).catch(() => {
         const handleInteraction = () => {
           if (videoRef.current) {
-            videoRef.current.play().catch(() => {});
+            videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
           }
           window.removeEventListener("scroll", handleInteraction);
           window.removeEventListener("touchstart", handleInteraction);
@@ -68,27 +68,29 @@ export function CloudflareStreamPlayer({
 
     return (
       <div className={`relative w-full h-full overflow-hidden bg-brand-surface ${className}`}>
-        {/* Instant background poster */}
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{ backgroundImage: `url(${fallbackPoster})` }}
-          aria-hidden="true"
-        />
         <video
           ref={videoRef}
           autoPlay={autoplay}
           muted={muted}
           loop={loop}
           controls={controls}
-          poster={fallbackPoster}
           playsInline
           preload="metadata"
+          onPlaying={() => setIsPlaying(true)}
+          onCanPlay={() => setIsPlaying(true)}
           onError={() => setHasError(true)}
-          className="relative w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         >
           {mp4Url && <source src={mp4Url} type="video/mp4" />}
           <source src={videoId} type={videoId.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
         </video>
+
+        {/* Fallback/Poster overlay - Stays visible until the video is actually playing! */}
+        <div
+          className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out ${isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+          style={{ backgroundImage: `url(${fallbackPoster})` }}
+          aria-hidden="true"
+        />
       </div>
     );
   }

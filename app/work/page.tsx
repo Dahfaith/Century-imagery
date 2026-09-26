@@ -6,7 +6,7 @@ import { WorkPortfolioGrid } from "@/components/WorkPortfolioGrid";
 import { getProjects, getPageBySlug } from "@/lib/api";
 import { Sparkles, Film } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // Cache for 60 seconds (ISR) instead of force-dynamic for instant page loads
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("work");
