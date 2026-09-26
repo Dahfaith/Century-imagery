@@ -45,9 +45,9 @@ export function Showreel({
             <CloudflareStreamPlayer
               videoId={reelVideoUrl}
               poster={posterImage}
-              autoplay={false}
-              loop={false}
-              muted={false}
+              autoplay={true}
+              loop={true}
+              muted={true}
               controls={true}
               className="absolute inset-0 w-full h-full object-cover object-center"
             />

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { getServices, getPageBySlug } from "@/lib/api";
+import { AutoplayVideo } from "@/components/AutoplayVideo";
 import {
   Film,
   CheckCircle2,
@@ -104,16 +105,11 @@ export default async function ServicesPage() {
                   }}
                 />
                 {service.videoUrl && (
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+                  <AutoplayVideo
+                    src={service.videoUrl}
                     poster={service.imagePlaceholder}
                     className="absolute inset-0 w-full h-full object-cover scale-[1.01]"
-                  >
-                    <source src={service.videoUrl} type={service.videoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
-                  </video>
+                  />
                 )}
                 <div className="absolute inset-0 bg-black/35 group-hover:bg-black/15 transition-colors duration-500 pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-transparent opacity-70 pointer-events-none" />
@@ -142,9 +138,11 @@ export default async function ServicesPage() {
                   <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tight text-brand-cream">
                     {service.title}
                   </h2>
-                  <p className="text-sm sm:text-base font-sans font-medium text-brand-cream/90 italic">
-                    &ldquo;{service.tagline}&rdquo;
-                  </p>
+                  {service.tagline && (
+                    <p className="text-sm sm:text-base font-sans font-medium text-brand-cream/90 italic">
+                      &ldquo;{service.tagline}&rdquo;
+                    </p>
+                  )}
                 </div>
 
                 <p className="text-sm sm:text-base text-brand-muted font-sans font-normal leading-relaxed">

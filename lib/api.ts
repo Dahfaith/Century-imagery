@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { cache } from 'react'
+import { services as CANONICAL_SERVICES } from '@/data/services'
 
 /**
  * Data Access Layer for Public Website
@@ -119,6 +120,7 @@ const LEGACY_SERVICE_VIDEOS: Record<string, string> = {
   'film-cinema-production': '/videos/hero.MP4',
   'luxury-event-cinema': '/projects/wedding-cinema.MP4',
   'century-post-lab': '/videos/showreel.MOV',
+  'production-support': '/services/aerial-specialized.MOV',
 }
 
 // ─── SITE SETTINGS ───────────────────────────────────────────────────────────
@@ -272,40 +274,62 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
     .eq('status', 'published')
     .order('sort_order', { ascending: true })
 
-  if (error || !data) return []
+  if (error || !data || data.length === 0) {
+    return CANONICAL_SERVICES.map((s, idx) => ({
+      ...s,
+      number: String(idx + 1).padStart(2, '0'),
+    }))
+  }
 
-  return data.map((svc: any, index: number) => {
+  // Filter out empty duplicate row 'the-century-post-lab' (the real post lab is 'century-post-lab')
+  const validServices = data.filter((svc: any) => {
+    if (svc.slug === 'the-century-post-lab') return false
+    return true
+  })
+
+  return validServices.map((svc: any, index: number) => {
+    const canonical = CANONICAL_SERVICES.find(
+      (c) => c.id === svc.slug || (c.id === 'century-post-lab' && svc.slug.includes('post-lab'))
+    )
+
     const items: any[] = (svc.service_items || []).sort((a: any, b: any) => a.sort_order - b.sort_order)
     const firstItem = items[0] || {}
     const coverMedia = svc.cover_media
     let videoUrl: string | undefined = undefined
-    let imagePlaceholder: string = '/brand/hero-mockup-gold.png'
+    let imagePlaceholder: string = canonical?.imagePlaceholder || '/brand/hero-mockup-gold.png'
 
     if (coverMedia) {
       if (coverMedia.media_type === 'video') {
         videoUrl = getVideoUrl(coverMedia)
-        imagePlaceholder = coverMedia.thumbnail_url || getMediaUrl(coverMedia)
+        imagePlaceholder = coverMedia.thumbnail_url || canonical?.imagePlaceholder || getMediaUrl(coverMedia)
       } else {
-        // User assigned an image: show image, do NOT play a video over it
-        videoUrl = undefined
+        // Cover media is an image: use it for thumbnail, and provide videoUrl from canonical/legacy for autoplay
         imagePlaceholder = getMediaUrl(coverMedia)
+        videoUrl = canonical?.videoUrl || LEGACY_SERVICE_VIDEOS[svc.slug]
       }
     } else {
-      // Fallback only if no cover_media assigned
-      videoUrl = LEGACY_SERVICE_VIDEOS[svc.slug] || undefined
-      imagePlaceholder = '/brand/hero-mockup-gold.png'
+      videoUrl = canonical?.videoUrl || LEGACY_SERVICE_VIDEOS[svc.slug]
+      imagePlaceholder = canonical?.imagePlaceholder || '/brand/hero-mockup-gold.png'
     }
+
+    const capabilities = items.length > 0
+      ? items.map((i: any) => i.title).filter(Boolean)
+      : (canonical?.capabilities || [])
+
+    const tagline = svc.short_description || firstItem.description || canonical?.tagline || ''
+    const description = svc.description || canonical?.description || ''
+    const category = svc.category || canonical?.category || (svc.title ? svc.title.toUpperCase() : 'STUDIO DISCIPLINE')
 
     return {
       id: svc.slug,
       number: String(index + 1).padStart(2, '0'),
-      title: svc.title,
-      tagline: firstItem.description || svc.short_description || '',
-      description: svc.description || '',
-      category: svc.title,
+      title: svc.title || canonical?.title || '',
+      tagline,
+      description,
+      category,
       videoUrl,
       imagePlaceholder,
-      capabilities: items.map((i: any) => i.title).filter(Boolean),
+      capabilities,
     }
   })
 })

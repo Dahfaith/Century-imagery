@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { PublicProject } from "@/lib/api";
+import { AutoplayVideo } from "./AutoplayVideo";
 import { cn } from "@/lib/utils";
 
 interface ProjectCardProps {
@@ -35,17 +36,11 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
               }}
             />
             {project.heroVideo && (
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="metadata"
+              <AutoplayVideo
+                src={project.heroVideo}
                 poster={project.heroImage}
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out opacity-0 group-hover:opacity-100 group-hover:scale-[1.03] pointer-events-none"
-              >
-                <source src={project.heroVideo} type={project.heroVideo.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
-              </video>
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.03]"
+              />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
@@ -112,17 +107,11 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
             }}
           />
           {project.heroVideo && (
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
+            <AutoplayVideo
+              src={project.heroVideo}
               poster={project.heroImage}
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out opacity-0 group-hover:opacity-100 group-hover:scale-[1.03] pointer-events-none"
-            >
-              <source src={project.heroVideo} type={project.heroVideo.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
-            </video>
+              className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.03]"
+            />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-brand-surface/90 via-transparent to-transparent opacity-70 pointer-events-none" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />

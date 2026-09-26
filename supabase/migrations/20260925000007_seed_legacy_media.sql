@@ -543,3 +543,7 @@ SET content = jsonb_build_object(
   )
 )
 WHERE slug = 'about';
+
+-- 6. REMOVE DUPLICATE EMPTY SERVICE ROW
+DELETE FROM services WHERE slug = 'the-century-post-lab';
+
