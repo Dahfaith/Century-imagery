@@ -3,12 +3,12 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { JournalArticle } from "@/data/types";
+import { PublicJournalArticle } from "@/lib/api";
 import { ArrowUpRight, BookOpen, Clock, Calendar, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface JournalArchiveGridProps {
-  initialArticles: JournalArticle[];
+  initialArticles: PublicJournalArticle[];
 }
 
 const CATEGORIES = [

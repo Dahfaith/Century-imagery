@@ -3,10 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { ProjectCard } from "./ProjectCard";
-import { Project } from "@/data/types";
+import { PublicProject } from "@/lib/api";
 import { ArrowUpRight, Film } from "lucide-react";
 
-export function SelectedWork({ projects }: { projects: Project[] }) {
+export function SelectedWork({ projects }: { projects: PublicProject[] }) {
   const selectedProjects = projects.slice(0, 4);
 
   return (

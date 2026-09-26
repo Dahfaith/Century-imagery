@@ -36,7 +36,7 @@ export default async function AboutPage() {
           </div>
 
           <h1 className="text-[clamp(2.75rem,7vw,6rem)] font-display font-extrabold uppercase tracking-tight text-brand-cream leading-[0.94] max-w-4xl">
-            {content.hero_title || <>ABOUT <span className="text-brand-gold">CENTURY</span></>}
+            {content?.hero?.heading || <>ABOUT <span className="text-brand-gold">CENTURY</span></>}
           </h1>
         </div>
       </section>
@@ -44,18 +44,20 @@ export default async function AboutPage() {
       {/* 2. WHO WE ARE: Asymmetric 2-Column (Editorial Text + Large Supporting Media) */}
       <section className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-20 sm:py-28 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          {/* Left: Large Editorial Text */}
           <div className="lg:col-span-6 space-y-8">
             <div className="space-y-3">
               <span className="text-xs font-mono text-brand-gold uppercase tracking-[0.2em] font-semibold block">
                 01 / WHO WE ARE
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tight text-brand-cream leading-[1.05]" dangerouslySetInnerHTML={{ __html: content.who_we_are_title || 'WE DIRECT CINEMA. <br /><span className="text-brand-gold">ARCHITECTING LEGACIES.</span>' }} />
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tight text-brand-cream leading-[1.05]">
+                WE DIRECT CINEMA. <br />
+                <span className="text-brand-gold">ARCHITECTING LEGACIES.</span>
+              </h2>
             </div>
 
             <div className="space-y-5 text-base sm:text-lg text-brand-muted font-sans font-normal leading-relaxed">
-              {content.who_we_are_text ? (
-                <div dangerouslySetInnerHTML={{ __html: content.who_we_are_text }} />
+              {content?.bio?.text ? (
+                <p className="text-brand-cream/90 font-normal">{content.bio.text}</p>
               ) : (
                 <>
                   <p className="text-brand-cream/90 font-normal">

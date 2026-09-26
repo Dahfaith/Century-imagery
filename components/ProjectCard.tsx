@@ -5,11 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { Project } from "@/data/types";
+import { PublicProject } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface ProjectCardProps {
-  project: Project;
+  project: PublicProject;
   layout?: "lead" | "standard" | "compact";
   index?: number;
 }

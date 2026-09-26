@@ -2,13 +2,13 @@
 
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Project, ProjectCategory } from "@/data/types";
+import { PublicProject } from "@/lib/api";
 import { CategoryFilter } from "./CategoryFilter";
 import { ProjectCard } from "./ProjectCard";
 import { Film } from "lucide-react";
 
 interface WorkPortfolioGridProps {
-  initialProjects: Project[];
+  initialProjects: PublicProject[];
 }
 
 const CATEGORY_KEYS: { id: string; label: string }[] = [

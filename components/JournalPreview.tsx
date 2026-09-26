@@ -3,10 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { JournalArticle } from "@/data/types";
+import { PublicJournalArticle } from "@/lib/api";
 import { ArrowUpRight, BookOpen } from "lucide-react";
 
-export function JournalPreview({ articles }: { articles: JournalArticle[] }) {
+export function JournalPreview({ articles }: { articles: PublicJournalArticle[] }) {
   return (
     <section id="journal-preview" className="relative w-full py-24 sm:py-32 bg-brand-black text-brand-cream border-t border-brand-border/40">
       <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 space-y-12 sm:space-y-16">
