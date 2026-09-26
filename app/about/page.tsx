@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const page = await getPageBySlug("about");
-  const content = page?.content || {};
+  const content: Record<string, any> = page?.content || {};
 
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">

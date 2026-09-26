@@ -113,14 +113,21 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
 
 export const getPageBySlug = cache(async (slug: string): Promise<PublicPage | null> => {
   const supabase = await createClient()
-  // Fetch page regardless of status for server-side rendering — public page filter is done by RLS policy
   const { data, error } = await supabase
     .from('pages')
     .select('slug, title, status, content, seo_title, seo_description, seo_image_url')
     .eq('slug', slug)
-    .single()
+    .single() as any
   if (error || !data) return null
-  return data as PublicPage
+  return {
+    slug: data.slug,
+    title: data.title,
+    status: data.status || 'draft',
+    content: (data.content as Record<string, any>) || {},
+    seo_title: data.seo_title || undefined,
+    seo_description: data.seo_description || undefined,
+    seo_image_url: data.seo_image_url || undefined,
+  }
 })
 
 export const getAllPages = cache(async (): Promise<PublicPage[]> => {
@@ -128,9 +135,17 @@ export const getAllPages = cache(async (): Promise<PublicPage[]> => {
   const { data, error } = await supabase
     .from('pages')
     .select('slug, title, status, content, seo_title, seo_description, seo_image_url')
-    .eq('status', 'published')
+    .eq('status', 'published') as any
   if (error || !data) return []
-  return data as PublicPage[]
+  return (data as any[]).map((d: any) => ({
+    slug: d.slug,
+    title: d.title,
+    status: d.status || 'draft',
+    content: (d.content as Record<string, any>) || {},
+    seo_title: d.seo_title || undefined,
+    seo_description: d.seo_description || undefined,
+    seo_image_url: d.seo_image_url || undefined,
+  }))
 })
 
 // ─── PROJECTS ────────────────────────────────────────────────────────────────
