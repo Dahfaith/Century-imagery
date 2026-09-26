@@ -30,7 +30,8 @@ const PAGE_SCHEMAS: Record<string, any> = {
     bio: [
       { key: 'heading', label: 'Bio Heading (Name)', type: 'text' },
       { key: 'text', label: 'Bio Description', type: 'textarea' },
-      { key: 'image_media_id', label: 'Founder Image', type: 'media' }
+      { key: 'image_media_id', label: 'Founder Image', type: 'media' },
+      { key: 'video_media_id', label: 'Supporting Video/Image', type: 'media' }
     ],
     statement: [
       { key: 'text', label: 'Brand Statement Text', type: 'textarea' }

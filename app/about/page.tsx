@@ -82,17 +82,38 @@ export default async function AboutPage() {
 
           {/* Right: Large Supporting Visual */}
           <div className="lg:col-span-6 relative aspect-[4/5] sm:aspect-[16/11] lg:aspect-[4/5] rounded-2xl sm:rounded-3xl overflow-hidden border border-brand-border/60 bg-brand-surface shadow-2xl">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              poster={content?.bio?.image_url || "/brand/hero-mockup-gold.png"}
-              className="w-full h-full object-cover"
-            >
-              <source src="/videos/hero.MP4" />
-            </video>
+            {content?.bio?.video_url ? (
+              content.bio.video_url.includes('stream.mux') || content.bio.video_url.includes('cloudflarestream') || content.bio.video_url.endsWith('.mp4') || content.bio.video_url.includes('videodelivery') ? (
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full object-cover"
+                >
+                  <source src={content.bio.video_url} />
+                </video>
+              ) : (
+                <img
+                  src={content.bio.video_url}
+                  alt="Production Unit"
+                  className="w-full h-full object-cover"
+                />
+              )
+            ) : (
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                poster="/brand/hero-mockup-gold.png"
+                className="w-full h-full object-cover"
+              >
+                <source src="/videos/hero.MP4" />
+              </video>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/90 via-transparent to-transparent opacity-70 pointer-events-none" />
             <div className="absolute bottom-6 left-6 right-6 z-10 space-y-1">
               <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-gold block font-medium">
