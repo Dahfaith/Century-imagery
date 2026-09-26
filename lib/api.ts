@@ -95,9 +95,30 @@ function getMediaUrl(mediaRecord: any): string {
 
 function getVideoUrl(mediaRecord: any): string | undefined {
   if (!mediaRecord) return undefined
-  // For Cloudflare Stream, playback_url is the embed-ready UID or HLS URL
-  // For R2, provider_url is the direct file URL
-  return mediaRecord.playback_url || mediaRecord.provider_url || undefined
+  if (mediaRecord.media_type === 'image') return undefined
+  const url = mediaRecord.playback_url || mediaRecord.provider_url
+  if (!url) return undefined
+  if (/\.(jpg|jpeg|png|webp|svg|gif)$/i.test(url)) return undefined
+  return url
+}
+
+// Built-in cinematic video fallbacks ensuring videos always play
+const LEGACY_PROJECT_VIDEOS: Record<string, string> = {
+  'rebel-empire-osogbo': '/videos/hero.MP4',
+  'oyo-state-armed-forces-remembrance': '/projects/armed-forces.MP4',
+  'dj-tunez-live-experiences': '/projects/dj-tunez.MP4',
+  'utiva-future-of-tech': '/projects/utiva.MP4',
+  'iconic-legacies-public-figures': '/projects/public-figures.MP4',
+  'century-legacy-wedding-cinema': '/projects/wedding-cinema.MP4',
+}
+
+const LEGACY_SERVICE_VIDEOS: Record<string, string> = {
+  'commercial-brand-production': '/services/commercial-brand.MOV',
+  'aerial-specialized': '/services/aerial-specialized.MOV',
+  'photography-division': '/services/photography.MOV',
+  'film-cinema-production': '/videos/hero.MP4',
+  'luxury-event-cinema': '/projects/wedding-cinema.MP4',
+  'century-post-lab': '/videos/showreel.MOV',
 }
 
 // ─── SITE SETTINGS ───────────────────────────────────────────────────────────
@@ -184,8 +205,11 @@ function mapProject(dbProject: any): PublicProject {
     shortDescription: dbProject.short_description || '',
     fullDescription: dbProject.description || '',
     story: undefined,
-    heroImage: getMediaUrl(coverMedia),
-    heroVideo: getVideoUrl(heroMedia),
+    heroImage: (coverMedia && coverMedia.media_type === 'image' ? getMediaUrl(coverMedia) : undefined)
+      || (heroMedia && heroMedia.media_type === 'image' ? getMediaUrl(heroMedia) : undefined)
+      || getMediaUrl(coverMedia)
+      || '/brand/hero-mockup-gold.png',
+    heroVideo: getVideoUrl(heroMedia) || getVideoUrl(coverMedia) || LEGACY_PROJECT_VIDEOS[dbProject.slug] || undefined,
     gallery: galleryItems,
     services,
     credits,
@@ -252,6 +276,8 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
     const items: any[] = (svc.service_items || []).sort((a: any, b: any) => a.sort_order - b.sort_order)
     const firstItem = items[0] || {}
     const coverMedia = svc.cover_media
+    const videoUrl = getVideoUrl(coverMedia) || LEGACY_SERVICE_VIDEOS[svc.slug] || undefined
+    const imagePlaceholder = getMediaUrl(coverMedia)
 
     return {
       id: svc.slug,
@@ -260,8 +286,8 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
       tagline: firstItem.description || svc.short_description || '',
       description: svc.description || '',
       category: svc.title,
-      videoUrl: getVideoUrl(coverMedia),
-      imagePlaceholder: getMediaUrl(coverMedia),
+      videoUrl,
+      imagePlaceholder,
       capabilities: items.map((i: any) => i.title).filter(Boolean),
     }
   })

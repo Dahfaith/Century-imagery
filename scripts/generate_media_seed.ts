@@ -55,7 +55,7 @@ VALUES (
 sql += `-- 1. MEDIA INSERTS\n`;
 
 const projectUpdates = projects.map((p: any) => {
-  const heroId = ensureMedia(p.heroImage || p.videoUrl); // Projects often had heroImage or videoUrl
+  const heroId = ensureMedia(p.heroVideo || p.videoUrl || (p.slug === 'rebel-empire-osogbo' ? '/videos/hero.MP4' : null));
   const coverId = ensureMedia(p.heroImage || p.gallery?.[0]);
   
   let gallerySql = '';

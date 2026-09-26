@@ -97,24 +97,23 @@ export default async function ServicesPage() {
                   isEven ? "lg:order-1" : "lg:order-2"
                 }`}
               >
-                {service.videoUrl ? (
+                <div
+                  className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  style={{
+                    backgroundImage: `url(${service.imagePlaceholder}), url('/brand/hero-mockup-gold.png')`,
+                  }}
+                />
+                {service.videoUrl && (
                   <video
                     autoPlay
                     loop
                     muted
                     playsInline
                     poster={service.imagePlaceholder}
-                    className="w-full h-full object-cover scale-[1.01]"
+                    className="absolute inset-0 w-full h-full object-cover scale-[1.01]"
                   >
                     <source src={service.videoUrl} type={service.videoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
                   </video>
-                ) : (
-                  <div
-                    className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-                    style={{
-                      backgroundImage: `url(${service.imagePlaceholder}), url('/brand/hero-mockup-gold.png')`,
-                    }}
-                  />
                 )}
                 <div className="absolute inset-0 bg-black/35 group-hover:bg-black/15 transition-colors duration-500 pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-transparent opacity-70 pointer-events-none" />
