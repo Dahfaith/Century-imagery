@@ -1,7 +1,8 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import nodemailer from 'nodemailer'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { Resend } from 'resend'
 
 interface BookingData {
   name: string;
@@ -26,13 +27,35 @@ export async function submitBooking(formData: BookingData) {
     return { error: 'Validation failed: Please provide more details regarding your project.' }
   }
 
+  // 1. Duplicate Protection via Admin Client
+  const adminClient = createAdminClient()
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+  
+  const { data: duplicateCheck, error: duplicateError } = await adminClient
+    .from('bookings')
+    .select('id')
+    .eq('email', formData.email)
+    .eq('message', formData.message)
+    .gte('created_at', oneHourAgo)
+    .maybeSingle()
+    
+  if (duplicateError && duplicateError.code !== 'PGRST116') {
+    console.error('Duplicate Check Error:', duplicateError)
+  }
+  
+  if (duplicateCheck) {
+    return { error: 'You have recently submitted this exact inquiry. Please wait before submitting again.' }
+  }
+
   // Generate Reference Code (e.g. CI-2026-84732)
   const refCode = `CI-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`
 
-  // Use the server client (which uses anon key, but we validate fields here)
+  // Use the server client to enforce existing RLS inserts
   const supabase = await createClient()
 
-  const { data, error } = await (supabase.from('bookings') as any)
+  // 2. Persist to Database (must succeed before sending emails)
+  // We do NOT use .select() here because anonymous RLS might block reads, leading to PGRST116.
+  const { error: insertError } = await (supabase.from('bookings') as any)
     .insert({
       reference_code: refCode,
       name: formData.name,
@@ -46,33 +69,30 @@ export async function submitBooking(formData: BookingData) {
       budget: formData.budget || null,
       message: formData.message,
       status: 'new'
-      // admin_notes is explicitly omitted
     })
 
-  if (error) {
-    console.error('Booking Insert Error:', error)
+  if (insertError) {
+    console.error('Booking Insert Error:', insertError)
     return { error: 'Failed to submit booking. Please try again later.' }
   }
 
-  // Send Email Notification to Owner
+  // 3. Email Notifications (Resend)
   try {
-    const { SMTP_USER, SMTP_PASS } = process.env;
-    
-    if (SMTP_USER && SMTP_PASS) {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: SMTP_USER,
-          pass: SMTP_PASS,
-        },
-      });
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const resendFromEmail = process.env.RESEND_FROM_EMAIL;
+    const adminEmail = process.env.BOOKING_NOTIFICATION_EMAIL;
 
-      const mailOptions = {
-        from: `"Century Imagery Booking" <${SMTP_USER}>`,
-        to: 'Centuryimagery@gmail.com',
+    if (resendApiKey && resendFromEmail && adminEmail) {
+      const resend = new Resend(resendApiKey);
+
+      // A. Admin Notification Email
+      const adminEmailResponse = await resend.emails.send({
+        from: `Century Imagery <${resendFromEmail}>`,
+        to: [adminEmail],
+        replyTo: formData.email,
         subject: `New Project Commission: ${refCode} - ${formData.name}`,
         html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #111;">
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;">
             <h2 style="color: #dcb450; text-transform: uppercase;">New Commission Received</h2>
             <p><strong>Reference Code:</strong> ${refCode}</p>
             <hr style="border: 1px solid #eee;" />
@@ -90,18 +110,60 @@ export async function submitBooking(formData: BookingData) {
               ${formData.message.replace(/\n/g, '<br />')}
             </blockquote>
             <br />
-            <p style="font-size: 12px; color: #888;">Log in to the Admin Dashboard to manage this booking.</p>
+            <p style="font-size: 12px; color: #888;">
+              <a href="https://centuryimagery.com/admin/bookings" style="color: #dcb450; font-weight: bold;">Click here</a> to view and manage this booking in the Admin Dashboard.
+            </p>
           </div>
         `
-      };
+      });
 
-      await transporter.sendMail(mailOptions);
+      // B. Client Confirmation Email
+      const clientEmailResponse = await resend.emails.send({
+        from: `Century Imagery <${resendFromEmail}>`,
+        to: [formData.email],
+        subject: `Your Booking Request Received: ${refCode}`,
+        html: `
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #222;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #dcb450; letter-spacing: 2px; text-transform: uppercase; font-size: 20px;">Century Imagery</h1>
+            </div>
+            <p>Dear ${formData.name},</p>
+            <p>Thank you for reaching out to Century Imagery. We have successfully received your project inquiry (<strong>${refCode}</strong>).</p>
+            <p>Our creative team is currently reviewing your brief and timeline. We aim to respond to all inquiries within 24-48 hours to discuss the next steps.</p>
+            <br/>
+            <p><strong>Your Inquiry Details:</strong></p>
+            <ul>
+              <li><strong>Service:</strong> ${formData.service}</li>
+              <li><strong>Timeline:</strong> ${formData.preferred_date}</li>
+              <li><strong>Location:</strong> ${formData.location}</li>
+            </ul>
+            <br/>
+            <p>We look forward to the possibility of collaborating with you.</p>
+            <br/>
+            <p>Best regards,<br/><strong>Century Imagery Team</strong></p>
+          </div>
+        `
+      });
+
+      // 4. Update Notification Status in DB
+      const adminNotified = !adminEmailResponse.error;
+      const clientNotified = !clientEmailResponse.error;
+
+      if (adminNotified || clientNotified) {
+        await (adminClient.from('bookings') as any)
+          .update({ 
+            admin_notified: adminNotified,
+            client_notified: clientNotified 
+          })
+          .eq('reference_code', refCode);
+      }
+
     } else {
-      console.warn('SMTP_USER and SMTP_PASS are not set. Skipping email notification.');
+      console.warn('Resend environment variables are missing. Skipping email notification.');
     }
   } catch (emailError) {
     console.error('Email Notification Error:', emailError);
-    // We do not fail the booking if the email fails.
+    // Failure to send email must not fail the booking submission.
   }
 
   return { success: true, referenceCode: refCode }
