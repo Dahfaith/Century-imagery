@@ -384,7 +384,7 @@ VALUES (
   status = 'ready';
 
 -- 2. PROJECT UPDATES
-UPDATE projects SET hero_media_id = '32c9cfaf-fdcf-4b20-9c87-62ac38f17b81', cover_media_id = 'fa918deb-e196-40c5-8f3d-3c3fdfca6084' WHERE slug = 'rebel-empire-osogbo';
+UPDATE projects SET hero_media_id = NULL, cover_media_id = 'fa918deb-e196-40c5-8f3d-3c3fdfca6084' WHERE slug = 'rebel-empire-osogbo';
 
 INSERT INTO project_media (project_id, media_id, sort_order)
 SELECT p.id, 'fa918deb-e196-40c5-8f3d-3c3fdfca6084', 0 FROM projects p

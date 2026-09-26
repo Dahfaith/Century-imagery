@@ -29,17 +29,18 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
         <Link href={`/work/${project.slug}`} className="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
           {/* Dominant Cinematic Visual (7 cols on desktop) */}
           <div className="lg:col-span-8 relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-brand-surface">
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              style={{
-                backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
-              }}
-            />
-            {project.heroVideo && (
+            {project.heroVideo ? (
               <AutoplayVideo
                 src={project.heroVideo}
                 poster={project.heroImage}
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.03]"
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              />
+            ) : (
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                style={{
+                  backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
+                }}
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
@@ -100,17 +101,18 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
       <Link href={`/work/${project.slug}`} className="flex flex-col h-full justify-between">
         {/* Dominant Image/Video Frame */}
         <div className="relative w-full aspect-[16/10] overflow-hidden bg-brand-surface">
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-            style={{
-              backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
-            }}
-          />
-          {project.heroVideo && (
+          {project.heroVideo ? (
             <AutoplayVideo
               src={project.heroVideo}
               poster={project.heroImage}
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.03]"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              style={{
+                backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
+              }}
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-brand-surface/90 via-transparent to-transparent opacity-70 pointer-events-none" />

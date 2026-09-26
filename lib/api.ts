@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cache } from 'react'
 import { services as CANONICAL_SERVICES } from '@/data/services'
+import { projects as CANONICAL_PROJECTS } from '@/data/projects'
 
 /**
  * Data Access Layer for Public Website
@@ -103,9 +104,8 @@ function getVideoUrl(mediaRecord: any): string | undefined {
   return url
 }
 
-// Built-in cinematic video fallbacks ensuring videos always play
+// Built-in cinematic video fallbacks ensuring videos match localhost defaults
 const LEGACY_PROJECT_VIDEOS: Record<string, string> = {
-  'rebel-empire-osogbo': '/videos/hero.MP4',
   'oyo-state-armed-forces-remembrance': '/projects/armed-forces.MP4',
   'dj-tunez-live-experiences': '/projects/dj-tunez.MP4',
   'utiva-future-of-tech': '/projects/utiva.MP4',
@@ -117,10 +117,6 @@ const LEGACY_SERVICE_VIDEOS: Record<string, string> = {
   'commercial-brand-production': '/services/commercial-brand.MOV',
   'aerial-specialized': '/services/aerial-specialized.MOV',
   'photography-division': '/services/photography.MOV',
-  'film-cinema-production': '/videos/hero.MP4',
-  'luxury-event-cinema': '/projects/wedding-cinema.MP4',
-  'century-post-lab': '/videos/showreel.MOV',
-  'production-support': '/services/aerial-specialized.MOV',
 }
 
 // ─── SITE SETTINGS ───────────────────────────────────────────────────────────
@@ -176,6 +172,7 @@ export const getAllPages = cache(async (): Promise<PublicPage[]> => {
 function mapProject(dbProject: any): PublicProject {
   const coverMedia = dbProject.cover_media || null
   const heroMedia = dbProject.hero_media || null
+  const canonical = CANONICAL_PROJECTS.find((p) => p.slug === dbProject.slug)
 
   // Build gallery from project_media relation (sorted)
   const galleryItems: string[] = (dbProject.project_media || [])
@@ -183,41 +180,73 @@ function mapProject(dbProject: any): PublicProject {
     .map((pm: any) => pm.media ? getMediaUrl(pm.media) : null)
     .filter(Boolean)
 
+  const finalGallery = galleryItems.length > 0 ? galleryItems : (canonical?.gallery || [])
+
   // Parse credits from JSON field or description
   let credits: { role: string; name: string }[] = []
-  if (dbProject.credits && Array.isArray(dbProject.credits)) {
+  if (dbProject.credits && Array.isArray(dbProject.credits) && dbProject.credits.length > 0) {
     credits = dbProject.credits
+  } else if (canonical?.credits) {
+    credits = canonical.credits
   }
 
   // Parse services from JSON field
   let services: string[] = []
-  if (Array.isArray(dbProject.services)) {
+  if (Array.isArray(dbProject.services) && dbProject.services.length > 0) {
     services = dbProject.services
+  } else if (canonical?.services) {
+    services = canonical.services
   } else if (dbProject.category) {
     services = [dbProject.category]
   }
 
+  // Cover image / thumbnail:
+  // If coverMedia is assigned in DB, prioritize it directly (whether updated via admin or seeded)
+  let heroImage = canonical?.heroImage || '/brand/hero-mockup-gold.png'
+  if (coverMedia) {
+    if (coverMedia.media_type === 'image') {
+      heroImage = getMediaUrl(coverMedia)
+    } else {
+      heroImage = coverMedia.thumbnail_url || getMediaUrl(coverMedia)
+    }
+  }
+
+  // Hero video:
+  // On localhost, rebel-empire-osogbo NEVER had a hero video; it is a photo project that displays rebel-empire.jpg.
+  // For other projects: use their real video from DB hero_media, cover_media (if video), or canonical localhost fallback.
+  let heroVideo: string | undefined = undefined
+  if (dbProject.slug === 'rebel-empire-osogbo') {
+    if (heroMedia && heroMedia.filename !== 'hero.MP4' && heroMedia.media_type === 'video') {
+      heroVideo = getVideoUrl(heroMedia)
+    } else {
+      heroVideo = undefined
+    }
+  } else {
+    if (heroMedia && heroMedia.media_type === 'video') {
+      heroVideo = getVideoUrl(heroMedia)
+    } else if (coverMedia && coverMedia.media_type === 'video') {
+      heroVideo = getVideoUrl(coverMedia)
+    } else {
+      heroVideo = LEGACY_PROJECT_VIDEOS[dbProject.slug] || canonical?.heroVideo || undefined
+    }
+  }
+
   return {
     slug: dbProject.slug,
-    title: dbProject.title || '',
-    client: dbProject.client_name || '',
-    category: dbProject.category || '',
-    year: dbProject.year ? String(dbProject.year) : '',
-    location: dbProject.location || '',
-    shortDescription: dbProject.short_description || '',
-    fullDescription: dbProject.description || '',
-    story: undefined,
-    heroImage: (coverMedia && coverMedia.media_type === 'image' ? getMediaUrl(coverMedia) : undefined)
-      || getMediaUrl(coverMedia)
-      || (heroMedia && heroMedia.media_type === 'image' ? getMediaUrl(heroMedia) : undefined)
-      || '/brand/hero-mockup-gold.png',
-    heroVideo: (heroMedia ? getVideoUrl(heroMedia) : undefined)
-      || (coverMedia && coverMedia.media_type === 'video' ? getVideoUrl(coverMedia) : undefined)
-      || (!coverMedia && !heroMedia ? LEGACY_PROJECT_VIDEOS[dbProject.slug] : undefined),
-    gallery: galleryItems,
+    title: dbProject.title || canonical?.title || '',
+    client: dbProject.client_name || canonical?.client || '',
+    category: dbProject.category || canonical?.category || '',
+    year: dbProject.year ? String(dbProject.year) : (canonical?.year || ''),
+    location: dbProject.location || canonical?.location || '',
+    shortDescription: dbProject.short_description || canonical?.shortDescription || '',
+    fullDescription: dbProject.description || canonical?.fullDescription || '',
+    story: canonical?.story,
+    heroImage,
+    heroVideo,
+    gallery: finalGallery,
     services,
     credits,
-    featured: dbProject.featured || false,
+    featured: dbProject.featured ?? canonical?.featured ?? false,
   }
 }
 
@@ -227,9 +256,9 @@ export const getProjects = cache(async (limit?: number): Promise<PublicProject[]
     .from('projects')
     .select(`
       *,
-      cover_media:cover_media_id (id, provider_url, thumbnail_url, playback_url, media_type),
-      hero_media:hero_media_id (id, provider_url, thumbnail_url, playback_url, media_type),
-      project_media (sort_order, media:media_id (id, provider_url, thumbnail_url, playback_url, media_type))
+      cover_media:cover_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
+      hero_media:hero_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
+      project_media (sort_order, media:media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type))
     `)
     .eq('status', 'published')
     .order('sort_order', { ascending: true })
@@ -238,7 +267,9 @@ export const getProjects = cache(async (limit?: number): Promise<PublicProject[]
   if (limit) query = query.limit(limit)
 
   const { data, error } = await query
-  if (error || !data) return []
+  if (error || !data || data.length === 0) {
+    return CANONICAL_PROJECTS.slice(0, limit || undefined) as any
+  }
   return data.map(mapProject)
 })
 
@@ -248,15 +279,18 @@ export const getProjectBySlug = cache(async (slug: string): Promise<PublicProjec
     .from('projects')
     .select(`
       *,
-      cover_media:cover_media_id (id, provider_url, thumbnail_url, playback_url, media_type),
-      hero_media:hero_media_id (id, provider_url, thumbnail_url, playback_url, media_type),
-      project_media (sort_order, media:media_id (id, provider_url, thumbnail_url, playback_url, media_type))
+      cover_media:cover_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
+      hero_media:hero_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
+      project_media (sort_order, media:media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type))
     `)
     .eq('slug', slug)
     .eq('status', 'published')
     .single()
 
-  if (error || !data) return null
+  if (error || !data) {
+    const canonical = CANONICAL_PROJECTS.find(p => p.slug === slug)
+    return (canonical as any) || null
+  }
   return mapProject(data)
 })
 
@@ -268,7 +302,7 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
     .from('services')
     .select(`
       *,
-      cover_media:cover_media_id (id, provider_url, thumbnail_url, playback_url, media_type),
+      cover_media:cover_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
       service_items (id, title, description, sort_order)
     `)
     .eq('status', 'published')
@@ -303,12 +337,13 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
         videoUrl = getVideoUrl(coverMedia)
         imagePlaceholder = coverMedia.thumbnail_url || canonical?.imagePlaceholder || getMediaUrl(coverMedia)
       } else {
-        // Cover media is an image: use it for thumbnail, and provide videoUrl from canonical/legacy for autoplay
+        // User assigned an image: show image, DO NOT play a video over it!
         imagePlaceholder = getMediaUrl(coverMedia)
-        videoUrl = canonical?.videoUrl || LEGACY_SERVICE_VIDEOS[svc.slug]
+        videoUrl = undefined
       }
     } else {
-      videoUrl = canonical?.videoUrl || LEGACY_SERVICE_VIDEOS[svc.slug]
+      // Fallback strictly to localhost canonical configuration
+      videoUrl = canonical?.videoUrl || LEGACY_SERVICE_VIDEOS[svc.slug] || undefined
       imagePlaceholder = canonical?.imagePlaceholder || '/brand/hero-mockup-gold.png'
     }
 
