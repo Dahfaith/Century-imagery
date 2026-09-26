@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Film, Image as ImageIcon, Copy, Check, Eye, X, ExternalLink, Calendar, HardDrive, Maximize2 } from 'lucide-react'
 import { DeleteMediaButton, SyncMediaButton } from './MediaActions'
+import ReactPlayer from 'react-player'
 
 export interface MediaItem {
   id: string
@@ -48,8 +49,9 @@ export function MediaCard({ item }: { item: MediaItem }) {
   const [imgError, setImgError] = useState(false)
 
   const previewUrl = item.thumbnail_url || item.playback_url || item.provider_url || ''
-  const isVideo = item.media_type === 'video' || /\.(mp4|webm|mov|m4v|mkv)$/i.test(previewUrl || item.filename)
-  const ext = getFileExtension(item.filename, item.mime_type)
+  const isExternalVideo = previewUrl.includes('youtube.com') || previewUrl.includes('youtu.be') || previewUrl.includes('vimeo.com')
+  const isVideo = item.media_type === 'video' || isExternalVideo || /\.(mp4|webm|mov|m4v|mkv)$/i.test(previewUrl || item.filename)
+  const ext = isExternalVideo ? 'WEB' : getFileExtension(item.filename, item.mime_type)
   const formattedSize = formatFileSize(item.file_size)
   const exactBytes = item.file_size ? `${item.file_size.toLocaleString()} bytes` : ''
 
@@ -79,14 +81,20 @@ export function MediaCard({ item }: { item: MediaItem }) {
           {isVideo ? (
             previewUrl ? (
               <div className="w-full h-full relative group/video">
-                <video 
-                  src={previewUrl} 
-                  preload="metadata"
-                  poster={item.thumbnail_url && !item.thumbnail_url.match(/\.(mp4|webm|mov|m4v)$/i) ? item.thumbnail_url : undefined}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
-                  muted
-                  playsInline
-                />
+                {isExternalVideo ? (
+                  <div className="w-full h-full object-cover pointer-events-none scale-105">
+                    <ReactPlayer url={previewUrl} width="100%" height="100%" light={item.thumbnail_url || true} playing={false} />
+                  </div>
+                ) : (
+                  <video 
+                    src={previewUrl} 
+                    preload="metadata"
+                    poster={item.thumbnail_url && !item.thumbnail_url.match(/\.(mp4|webm|mov|m4v)$/i) ? item.thumbnail_url : undefined}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                    muted
+                    playsInline
+                  />
+                )}
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:bg-black/40 transition-colors">
                   <div className="w-10 h-10 rounded-full bg-brand-black/80 backdrop-blur-md border border-brand-gold/40 flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
                     <Film className="w-5 h-5 ml-0.5" />
@@ -227,13 +235,19 @@ export function MediaCard({ item }: { item: MediaItem }) {
             <div className="bg-black/90 aspect-video flex items-center justify-center relative overflow-hidden border-b border-brand-border">
               {isVideo ? (
                 previewUrl ? (
-                  <video 
-                    src={previewUrl} 
-                    controls 
-                    autoPlay 
-                    playsInline 
-                    className="w-full h-full object-contain"
-                  />
+                  isExternalVideo ? (
+                    <div className="w-full h-full">
+                      <ReactPlayer url={previewUrl} width="100%" height="100%" controls playing playsinline />
+                    </div>
+                  ) : (
+                    <video 
+                      src={previewUrl} 
+                      controls 
+                      autoPlay 
+                      playsInline 
+                      className="w-full h-full object-contain"
+                    />
+                  )
                 ) : (
                   <div className="text-brand-muted text-sm">Video preview unavailable</div>
                 )
