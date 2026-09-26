@@ -93,27 +93,37 @@ export async function submitBooking(formData: BookingData) {
         replyTo: formData.email,
         subject: `New Project Commission: ${refCode} - ${formData.name}`,
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;">
-            <h2 style="color: #dcb450; text-transform: uppercase;">New Commission Received</h2>
-            <p><strong>Reference Code:</strong> ${refCode}</p>
-            <hr style="border: 1px solid #eee;" />
-            <p><strong>Name:</strong> ${formData.name}</p>
-            <p><strong>Email:</strong> ${formData.email}</p>
-            <p><strong>Phone:</strong> ${formData.phone}</p>
-            <p><strong>Company/Brand:</strong> ${formData.company || 'N/A'}</p>
-            <p><strong>Service:</strong> ${formData.service}</p>
-            <p><strong>Location:</strong> ${formData.location}</p>
-            <p><strong>Timeline:</strong> ${formData.preferred_date}</p>
-            <p><strong>Budget:</strong> ${formData.budget || 'N/A'}</p>
-            <br />
-            <p><strong>Project Brief:</strong></p>
-            <blockquote style="border-left: 4px solid #dcb450; padding-left: 16px; color: #444; background: #f9f9f9; padding: 12px;">
-              ${formData.message.replace(/\n/g, '<br />')}
-            </blockquote>
-            <br />
-            <p style="font-size: 12px; color: #888;">
-              <a href="https://centuryimagery.com/admin/bookings" style="color: #dcb450; font-weight: bold;">Click here</a> to view and manage this booking in the Admin Dashboard.
-            </p>
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #09090b; color: #e4e4e7; border-radius: 8px; overflow: hidden; border: 1px solid #27272a;">
+            <div style="background-color: #111113; padding: 30px; text-align: center; border-bottom: 1px solid #27272a;">
+              <h1 style="margin: 0; color: #dcb450; font-size: 20px; letter-spacing: 3px; text-transform: uppercase;">Century Imagery</h1>
+              <p style="margin: 10px 0 0 0; color: #a1a1aa; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">New Commission Received</p>
+            </div>
+            
+            <div style="padding: 30px;">
+              <div style="background-color: rgba(220, 180, 80, 0.1); border-left: 3px solid #dcb450; padding: 12px 16px; margin-bottom: 30px;">
+                <p style="margin: 0; color: #dcb450; font-size: 14px; font-weight: bold; font-family: monospace;">REFERENCE: ${refCode}</p>
+              </div>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px; font-size: 14px; line-height: 1.6;">
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa; width: 130px;"><strong>Client Name:</strong></td><td style="padding-bottom: 12px; color: #fff;">${formData.name}</td></tr>
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa;"><strong>Email:</strong></td><td style="padding-bottom: 12px; color: #fff;"><a href="mailto:${formData.email}" style="color: #dcb450; text-decoration: none;">${formData.email}</a></td></tr>
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa;"><strong>Phone:</strong></td><td style="padding-bottom: 12px; color: #fff;">${formData.phone}</td></tr>
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa;"><strong>Organization:</strong></td><td style="padding-bottom: 12px; color: #fff;">${formData.company || 'N/A'}</td></tr>
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa;"><strong>Service:</strong></td><td style="padding-bottom: 12px; color: #fff;">${formData.service}</td></tr>
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa;"><strong>Location:</strong></td><td style="padding-bottom: 12px; color: #fff;">${formData.location}</td></tr>
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa;"><strong>Timeline:</strong></td><td style="padding-bottom: 12px; color: #fff;">${formData.preferred_date}</td></tr>
+                <tr><td style="padding-bottom: 12px; color: #a1a1aa;"><strong>Budget:</strong></td><td style="padding-bottom: 12px; color: #fff;">${formData.budget || 'N/A'}</td></tr>
+              </table>
+
+              <div style="margin-bottom: 30px;">
+                <p style="margin: 0 0 10px 0; color: #a1a1aa; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Project Brief</p>
+                <div style="background-color: #18181b; border: 1px solid #27272a; border-radius: 6px; padding: 16px; color: #d4d4d8; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${formData.message}</div>
+              </div>
+
+              <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #27272a;">
+                <a href="https://www.centuryimagery.com/admin/bookings" style="display: inline-block; background-color: #dcb450; color: #000; padding: 14px 28px; text-decoration: none; font-weight: bold; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px;">Open in Admin Dashboard</a>
+              </div>
+            </div>
           </div>
         `
       });
@@ -122,26 +132,42 @@ export async function submitBooking(formData: BookingData) {
       const clientEmailResponse = await resend.emails.send({
         from: `Century Imagery <${resendFromEmail}>`,
         to: [formData.email],
-        subject: `Your Booking Request Received: ${refCode}`,
+        subject: `Commission Brief Received: ${refCode}`,
         html: `
-          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #222;">
-            <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #dcb450; letter-spacing: 2px; text-transform: uppercase; font-size: 20px;">Century Imagery</h1>
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #09090b; color: #e4e4e7; border-radius: 8px; overflow: hidden; border: 1px solid #27272a;">
+            <div style="background-color: #111113; padding: 40px 30px; text-align: center; border-bottom: 1px solid #27272a;">
+              <h1 style="margin: 0; color: #dcb450; font-size: 22px; letter-spacing: 4px; text-transform: uppercase;">Century Imagery</h1>
             </div>
-            <p>Dear ${formData.name},</p>
-            <p>Thank you for reaching out to Century Imagery. We have successfully received your project inquiry (<strong>${refCode}</strong>).</p>
-            <p>Our creative team is currently reviewing your brief and timeline. We aim to respond to all inquiries within 24-48 hours to discuss the next steps.</p>
-            <br/>
-            <p><strong>Your Inquiry Details:</strong></p>
-            <ul>
-              <li><strong>Service:</strong> ${formData.service}</li>
-              <li><strong>Timeline:</strong> ${formData.preferred_date}</li>
-              <li><strong>Location:</strong> ${formData.location}</li>
-            </ul>
-            <br/>
-            <p>We look forward to the possibility of collaborating with you.</p>
-            <br/>
-            <p>Best regards,<br/><strong>Century Imagery Team</strong></p>
+            
+            <div style="padding: 40px 30px;">
+              <p style="margin: 0 0 20px 0; font-size: 16px; color: #fff;">Dear ${formData.name},</p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6; color: #a1a1aa;">
+                Thank you for reaching out to Century Imagery. We have successfully received your project inquiry and secured it under reference <strong style="color: #dcb450;">${refCode}</strong>.
+              </p>
+              
+              <p style="margin: 0 0 30px 0; font-size: 15px; line-height: 1.6; color: #a1a1aa;">
+                Our creative directors and production desk are currently reviewing your brief, timeline, and location requirements. We aim to respond to all commissions within 24–48 hours to discuss technical requirements and the next steps for a creative treatment call.
+              </p>
+
+              <div style="background-color: #18181b; border: 1px solid #27272a; border-radius: 6px; padding: 24px; margin-bottom: 30px;">
+                <p style="margin: 0 0 16px 0; color: #dcb450; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">Inquiry Summary</p>
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px; line-height: 1.6;">
+                  <tr><td style="padding-bottom: 8px; color: #71717a; width: 100px;">Service:</td><td style="padding-bottom: 8px; color: #e4e4e7;">${formData.service}</td></tr>
+                  <tr><td style="padding-bottom: 8px; color: #71717a;">Timeline:</td><td style="padding-bottom: 8px; color: #e4e4e7;">${formData.preferred_date}</td></tr>
+                  <tr><td style="padding-bottom: 0; color: #71717a;">Location:</td><td style="padding-bottom: 0; color: #e4e4e7;">${formData.location}</td></tr>
+                </table>
+              </div>
+
+              <p style="margin: 0 0 30px 0; font-size: 15px; line-height: 1.6; color: #a1a1aa;">
+                We look forward to the possibility of collaborating with you.
+              </p>
+
+              <div style="border-top: 1px solid #27272a; padding-top: 24px;">
+                <p style="margin: 0; font-size: 14px; font-weight: bold; color: #fff;">Century Imagery Team</p>
+                <a href="https://www.centuryimagery.com" style="display: block; margin-top: 4px; font-size: 13px; color: #dcb450; text-decoration: none;">www.centuryimagery.com</a>
+              </div>
+            </div>
           </div>
         `
       });
