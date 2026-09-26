@@ -51,16 +51,6 @@ export default async function DashboardOverview() {
         })}
       </div>
       
-      <div className="mt-8 bg-brand-surface border border-brand-border rounded-xl p-8 flex items-center justify-between">
-        <div>
-          <h3 className="text-xl font-display text-brand-cream">Dashboard Configuration Complete</h3>
-          <p className="text-brand-muted font-sans mt-2 max-w-2xl">
-            The backend infrastructure and security foundation have been successfully initialized. 
-            You can navigate through the sidebar to view the structure of the upcoming CMS sections. 
-            Full data management and media uploads will be unlocked in upcoming phases.
-          </p>
-        </div>
-      </div>
     </div>
   )
 }
