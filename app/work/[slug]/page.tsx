@@ -5,7 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ProjectVideoPlayer } from "@/components/ProjectVideoPlayer";
-import { projects } from "@/data/projects";
+import { getProjects, getProjectBySlug } from "@/lib/api";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,7 +22,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((project) => ({
     slug: project.slug,
   }));
@@ -30,7 +31,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     return {
@@ -51,13 +52,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const currentIndex = projects.findIndex((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
-  if (currentIndex === -1) {
+  if (!project) {
     notFound();
   }
 
-  const project = projects[currentIndex];
+  // To calculate next/prev, we need the whole list
+  const projects = await getProjects();
+  const currentIndex = projects.findIndex((p) => p.slug === slug);
 
   // Calculate Previous and Next projects
   const prevProject =

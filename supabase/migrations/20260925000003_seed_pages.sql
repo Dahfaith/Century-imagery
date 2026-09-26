@@ -1,0 +1,8 @@
+-- Seed official structured pages if they do not exist
+INSERT INTO pages (slug, title, status, content)
+VALUES 
+    ('home', 'Homepage', 'published', '{"hero": {"eyebrow": "VISUAL STORYTELLING", "heading": "CENTURY IMAGERY", "description": "Crafting cinematic experiences that transcend the ordinary. We specialize in luxury events, brand narratives, and visual arts.", "cta_text": "View Our Work", "cta_link": "/work"}, "about_preview": {"heading": "BEYOND THE LENS", "text": "We are a collective of visual artists dedicated to capturing the essence of your story. Our approach blends technical precision with raw emotional intelligence.", "link_text": "Discover Our Story"}}'::jsonb),
+    ('about', 'About Us', 'published', '{"hero": {"heading": "ABOUT CENTURY", "description": "A legacy of visual excellence."}, "bio": {"heading": "AKIN IDOWU", "text": "Founder and lead director..."}, "statement": {"text": "We believe in the power of visual storytelling to move, inspire, and endure."}}'::jsonb),
+    ('services', 'Services Overview', 'published', '{"hero": {"heading": "OUR SERVICES", "description": "Comprehensive visual production services from concept to post-production."}, "cta": {"heading": "READY TO CREATE?", "text": "Let us bring your vision to life."}}'::jsonb),
+    ('booking', 'Booking Information', 'published', '{"hero": {"heading": "BOOKING", "description": "Start your journey with Century Imagery."}, "instructions": {"heading": "HOW IT WORKS", "text": "Fill out the inquiry form below and our team will get back to you within 24 hours to schedule a consultation."}}'::jsonb)
+ON CONFLICT (slug) DO NOTHING;

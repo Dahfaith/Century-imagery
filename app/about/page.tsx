@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { getPageBySlug } from "@/lib/api";
 import { Sparkles, Film } from "lucide-react";
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "About The Studio | Century Imagery LLC",
@@ -15,7 +18,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const page = await getPageBySlug("about");
+  const content = page?.content || {};
+
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">
       {/* Global Navigation */}
@@ -30,7 +36,7 @@ export default function AboutPage() {
           </div>
 
           <h1 className="text-[clamp(2.75rem,7vw,6rem)] font-display font-extrabold uppercase tracking-tight text-brand-cream leading-[0.94] max-w-4xl">
-            ABOUT <span className="text-brand-gold">CENTURY</span>
+            {content.hero_title || <>ABOUT <span className="text-brand-gold">CENTURY</span></>}
           </h1>
         </div>
       </section>
@@ -44,22 +50,25 @@ export default function AboutPage() {
               <span className="text-xs font-mono text-brand-gold uppercase tracking-[0.2em] font-semibold block">
                 01 / WHO WE ARE
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tight text-brand-cream leading-[1.05]">
-                WE DIRECT CINEMA. <br />
-                <span className="text-brand-gold">ARCHITECTING LEGACIES.</span>
-              </h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tight text-brand-cream leading-[1.05]" dangerouslySetInnerHTML={{ __html: content.who_we_are_title || 'WE DIRECT CINEMA. <br /><span className="text-brand-gold">ARCHITECTING LEGACIES.</span>' }} />
             </div>
 
             <div className="space-y-5 text-base sm:text-lg text-brand-muted font-sans font-normal leading-relaxed">
-              <p className="text-brand-cream/90 font-normal">
-                Century Imagery is an elite visual storytelling and cinematography brand with deep experience across entertainment, corporate, cultural, and public-sector productions.
-              </p>
-              <p>
-                Operating from studio headquarters in Ibadan with active deployments in Lagos and worldwide transit, our unit serves as primary video architect for landmark nightlife, documents state government protocol across consecutive years, and directs campaign visuals for global music icons and continental tech accelerators.
-              </p>
-              <p>
-                With portfolio releases achieving over <span className="text-brand-gold font-semibold">400,000+ organic views</span>, we translate pulsating energy and solemn ceremony into everlasting motion picture art.
-              </p>
+              {content.who_we_are_text ? (
+                <div dangerouslySetInnerHTML={{ __html: content.who_we_are_text }} />
+              ) : (
+                <>
+                  <p className="text-brand-cream/90 font-normal">
+                    Century Imagery is an elite visual storytelling and cinematography brand with deep experience across entertainment, corporate, cultural, and public-sector productions.
+                  </p>
+                  <p>
+                    Operating from studio headquarters in Ibadan with active deployments in Lagos and worldwide transit, our unit serves as primary video architect for landmark nightlife, documents state government protocol across consecutive years, and directs campaign visuals for global music icons and continental tech accelerators.
+                  </p>
+                  <p>
+                    With portfolio releases achieving over <span className="text-brand-gold font-semibold">400,000+ organic views</span>, we translate pulsating energy and solemn ceremony into everlasting motion picture art.
+                  </p>
+                </>
+              )}
             </div>
           </div>
 

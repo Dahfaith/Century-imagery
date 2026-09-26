@@ -3,8 +3,10 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { JournalArchiveGrid } from "@/components/JournalArchiveGrid";
-import { articles } from "@/data/journal";
+import { getJournalPosts } from "@/lib/api";
 import { Sparkles, BookOpen } from "lucide-react";
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "The Journal | Notes on Cinema & Craft | Century Imagery LLC",
@@ -17,7 +19,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function JournalPage() {
+export default async function JournalPage() {
+  const articles = await getJournalPosts();
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">
       {/* Global Navigation */}

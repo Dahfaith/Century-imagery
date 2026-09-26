@@ -3,8 +3,10 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WorkPortfolioGrid } from "@/components/WorkPortfolioGrid";
-import { projects } from "@/data/projects";
-import { Sparkles, Film, ArrowUpRight } from "lucide-react";
+import { getProjects } from "@/lib/api";
+import { Sparkles, Film } from "lucide-react";
+
+export const dynamic = 'force-dynamic' // or revalidate = 60
 
 export const metadata: Metadata = {
   title: "Selected Work & Filmography | Century Imagery LLC",
@@ -17,7 +19,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const projects = await getProjects()
+
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">
       {/* Global Navigation */}

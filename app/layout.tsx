@@ -16,41 +16,42 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://centuryimagery.com"),
-  title: "Century Imagery | Cinematic Digital Media & Creative Direction",
-  description:
-    "A Nigerian creative digital media and cinematography brand focused on commercial videography, brand campaign films, fashion visuals, music visualizers, and visual storytelling.",
-  keywords: [
-    "Century Imagery",
-    "Cinematography Nigeria",
-    "Commercial Videography",
-    "Creative Direction Lagos",
-    "Brand Campaign Films",
-    "Editorial Visuals",
-    "Music Visualizers",
-    "Nigerian Media Production",
-  ],
-  authors: [{ name: "Century Imagery" }],
-  creator: "Century Imagery",
-  openGraph: {
-    type: "website",
-    locale: "en_NG",
-    url: "https://centuryimagery.com",
-    title: "Century Imagery | Cinematic Digital Media & Creative Direction",
-    description:
-      "Cinematic storytelling for brands, artists & culture. Commercial videography, campaign films, editorial visuals.",
-    siteName: "Century Imagery",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Century Imagery | Cinematic Storytelling",
-    description: "Cinematic storytelling for brands, artists & culture.",
-  },
-  icons: {
-    icon: "/favicon.svg",
-  },
-};
+import { getSiteSettings } from "@/lib/api";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  
+  const title = settings?.seo_title || "Century Imagery | Cinematic Digital Media & Creative Direction";
+  const description = settings?.seo_description || "A Nigerian creative digital media and cinematography brand focused on commercial videography, brand campaign films, fashion visuals, music visualizers, and visual storytelling.";
+  const keywords = settings?.site_description || "Century Imagery, Cinematography Nigeria, Commercial Videography, Creative Direction Lagos, Brand Campaign Films, Editorial Visuals, Music Visualizers, Nigerian Media Production";
+  
+  return {
+    metadataBase: new URL("https://centuryimagery.com"),
+    title,
+    description,
+    keywords,
+    authors: [{ name: settings?.site_name || "Century Imagery" }],
+    creator: settings?.site_name || "Century Imagery",
+    openGraph: {
+      type: "website",
+      locale: "en_NG",
+      url: "https://centuryimagery.com",
+      title,
+      description,
+      siteName: settings?.site_name || "Century Imagery",
+      images: settings?.seo_image_url ? [{ url: settings.seo_image_url }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: settings?.seo_image_url ? [{ url: settings.seo_image_url }] : [],
+    },
+    icons: {
+      icon: settings?.favicon_url || "/favicon.svg",
+    },
+  };
+}
 
 export default function RootLayout({
   children,

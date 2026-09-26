@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { CloudflareStreamPlayer } from "./CloudflareStreamPlayer";
 
 interface VideoBackgroundProps {
   desktopVideoUrl?: string;
@@ -70,23 +71,18 @@ export function VideoBackground({
         aria-hidden="true"
       />
 
-      {/* HTML5 Optimized Video Player */}
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        poster={posterUrl}
-        onPlaying={() => setIsPlaying(true)}
-        className="absolute inset-0 w-full h-full object-cover object-center"
-      >
-        {mobileVideoUrl && (
-          <source src={mobileVideoUrl} type={mobileVideoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} media="(max-width: 768px)" />
-        )}
-        <source src={desktopVideoUrl} type={desktopVideoUrl.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
-      </video>
+      {/* HTML5 Optimized Video Player / Cloudflare Stream */}
+      <div className="absolute inset-0 w-full h-full">
+        <CloudflareStreamPlayer
+          videoId={desktopVideoUrl}
+          poster={posterUrl}
+          autoplay={true}
+          loop={true}
+          muted={true}
+          controls={false}
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+      </div>
 
       {/* Crisp Cinematic Overlays:
           1. Clean translucent dark wash (keeps colors vibrant without muting details) */}

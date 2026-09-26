@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { services } from "@/data/services";
+import { ServiceItem } from "@/data/types";
 import { ArrowUpRight, Plus, Minus, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function ServicesPreview() {
-  const [activeServiceId, setActiveServiceId] = useState<string>(services[0].id);
+export function ServicesPreview({ services }: { services: ServiceItem[] }) {
+  const [activeServiceId, setActiveServiceId] = useState<string>(services[0]?.id || "");
 
   return (
     <section

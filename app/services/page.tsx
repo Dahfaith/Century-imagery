@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { services } from "@/data/services";
+import { getServices } from "@/lib/api";
 import {
   Film,
   CheckCircle2,
@@ -15,6 +15,8 @@ import {
   Layers,
 } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Services & Studio Disciplines | Century Imagery LLC",
   description:
@@ -26,7 +28,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
+  
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">
       {/* Global Navigation */}

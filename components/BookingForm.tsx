@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { submitBooking } from "@/app/booking/actions";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -152,7 +153,7 @@ export function BookingForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validate()) {
@@ -167,25 +168,47 @@ export function BookingForm() {
     setIsSubmitting(true);
     setSubmissionStep("Encrypting Creative Brief & Attachments...");
 
-    // Simulated cinematic multi-stage submission
-    setTimeout(() => {
+    // Simulate UX progression while calling server
+    const uxTimer = setTimeout(() => {
       setSubmissionStep("Calibrating Studio Timeline & Equipment Availability...");
     }, 900);
 
-    setTimeout(() => {
-      setSubmissionStep("Logging Transmission to Akin Idowu & Executive Producers...");
-    }, 1800);
+    try {
+      const res = await submitBooking({
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
+        service: formData.discipline,
+        preferred_date: formData.timeline,
+        location: formData.location,
+        budget: formData.budget,
+        message: formData.projectBrief
+      })
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      const randomCode =
-        "CI-" +
-        new Date().getFullYear() +
-        "-" +
-        Math.floor(10000 + Math.random() * 90000);
-      setConfirmationCode(randomCode);
-    }, 2700);
+      clearTimeout(uxTimer)
+
+      if (res.error) {
+        alert(res.error)
+        setIsSubmitting(false)
+        return
+      }
+
+      setSubmissionStep("Logging Transmission to Akin Idowu & Executive Producers...");
+      
+      // Artificial delay for UX theatricality
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setIsSubmitted(true);
+        setConfirmationCode(res.referenceCode || "CI-CONFIRMED");
+      }, 1000);
+
+    } catch (error) {
+      clearTimeout(uxTimer)
+      console.error(error)
+      alert("An unexpected error occurred. Please try again.")
+      setIsSubmitting(false)
+    }
   };
 
   const handleReset = () => {

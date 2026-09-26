@@ -9,8 +9,14 @@ import { AboutPreview } from "@/components/AboutPreview";
 import { JournalPreview } from "@/components/JournalPreview";
 import { BookingCTA } from "@/components/BookingCTA";
 import { Footer } from "@/components/Footer";
+import { getProjects, getServices, getJournalPosts } from "@/lib/api";
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const projects = await getProjects(4);
+  const services = await getServices();
+  const articles = await getJournalPosts(3);
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">
       {/* Global Navigation */}
@@ -23,10 +29,10 @@ export default function Home() {
       <BrandStatement />
 
       {/* Section 3: Selected Work Showcase */}
-      <SelectedWork />
+      <SelectedWork projects={projects} />
 
       {/* Section 4: Official Services & The Century Post Lab */}
-      <ServicesPreview />
+      <ServicesPreview services={services} />
 
       {/* Section 5: Studio Cinematic Showreel */}
       <Showreel />
@@ -35,7 +41,7 @@ export default function Home() {
       <AboutPreview />
 
       {/* Section 7: Editorial Journal */}
-      <JournalPreview />
+      <JournalPreview articles={articles} />
 
       {/* Section 8: Booking CTA */}
       <BookingCTA />

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { articles } from "@/data/journal";
+import { getJournalPosts, getJournalPostBySlug } from "@/lib/api";
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,7 +20,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const articles = await getJournalPosts();
   return articles.map((article) => ({
     slug: article.slug,
   }));
@@ -28,7 +29,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = articles.find((a) => a.slug === slug);
+  const article = await getJournalPostBySlug(slug);
 
   if (!article) {
     return {
@@ -49,13 +50,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function JournalArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const currentIndex = articles.findIndex((a) => a.slug === slug);
+  const article = await getJournalPostBySlug(slug);
 
-  if (currentIndex === -1) {
+  if (!article) {
     notFound();
   }
 
-  const article = articles[currentIndex];
+  const articles = await getJournalPosts();
+  const currentIndex = articles.findIndex((a) => a.slug === slug);
 
   // Previous and Next articles
   const prevArticle =
