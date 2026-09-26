@@ -224,32 +224,37 @@ export function PageEditor({ initialData, mediaOptions }: { initialData: any, me
         </div>
       )}
 
-      <div className="fixed bottom-0 left-0 md:left-64 right-0 p-4 bg-brand-surface/80 backdrop-blur-md border-t border-brand-border flex justify-end z-40">
-        <div className="max-w-7xl mx-auto w-full flex justify-end items-center space-x-4">
-          <a 
-            href={initialData.slug === 'home' ? '/' : `/${initialData.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center space-x-2 px-4 py-2 text-brand-muted hover:text-brand-cream transition-colors font-medium mr-auto"
-          >
-            <Eye className="w-5 h-5" />
-            <span>Preview Live Page</span>
-          </a>
+      {/* Sticky Save Bar */}
+      <div className="fixed bottom-0 left-0 md:left-64 right-0 p-3 sm:p-4 bg-[#0C0B10]/95 backdrop-blur-md border-t border-brand-border z-40">
+        <div className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
+          <div className="flex items-center justify-start">
+            <a 
+              href={initialData.slug === 'home' ? '/' : `/${initialData.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-1.5 px-3 py-1.5 text-xs text-brand-muted hover:text-brand-cream transition-colors font-medium"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Preview Live Page</span>
+            </a>
+          </div>
 
-          <button 
-            type="button"
-            onClick={() => router.push('/admin/pages')}
-            className="px-6 py-2 border border-brand-border text-brand-cream rounded hover:bg-brand-border transition-colors font-medium"
-          >
-            Cancel
-          </button>
-          <button 
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2 bg-brand-gold text-brand-black rounded hover:bg-white transition-colors font-medium min-w-[120px]"
-          >
-            {loading ? 'Saving...' : 'Save Page'}
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button 
+              type="button"
+              onClick={() => router.push('/admin/pages')}
+              className="flex-1 sm:flex-none px-4 py-2 text-xs sm:text-sm border border-brand-border text-brand-cream rounded-lg hover:bg-brand-border transition-colors font-medium text-center"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              disabled={loading}
+              className="flex-1 sm:flex-none px-5 py-2 text-xs sm:text-sm bg-brand-gold text-brand-black rounded-lg hover:bg-white transition-colors font-semibold text-center shadow-lg min-w-[110px]"
+            >
+              {loading ? 'Saving...' : 'Save Page'}
+            </button>
+          </div>
         </div>
       </div>
     </form>

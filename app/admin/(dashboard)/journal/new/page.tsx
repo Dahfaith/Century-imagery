@@ -16,10 +16,10 @@ export default async function NewJournalPage() {
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto w-full">
-      <div className="mb-8">
-        <h1 className="text-3xl font-display font-medium text-brand-cream">New Journal Article</h1>
-        <p className="text-brand-muted mt-2">Create a new editorial piece or studio update.</p>
+    <div className="space-y-6 max-w-5xl mx-auto w-full">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-display font-medium text-brand-cream">New Journal Article</h1>
+        <p className="text-xs sm:text-sm text-brand-muted mt-1">Create a new editorial piece or studio update.</p>
       </div>
 
       <JournalForm mediaOptions={mediaOptions || []} />

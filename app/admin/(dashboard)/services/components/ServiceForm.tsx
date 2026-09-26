@@ -276,25 +276,30 @@ export function ServiceForm({
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 md:left-64 right-0 p-4 bg-brand-surface/80 backdrop-blur-md border-t border-brand-border flex justify-end z-40">
-        <div className="max-w-7xl mx-auto w-full flex justify-end space-x-4">
-          <button 
-            type="button"
-            onClick={() => router.push('/admin/services')}
-            className="px-6 py-2 border border-brand-border text-brand-cream rounded hover:bg-brand-border transition-colors font-medium"
-          >
-            Cancel
-          </button>
-          {initialData?.id && (
-             <DeleteServiceButton id={initialData.id} title={initialData.title} />
-          )}
-          <button 
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2 bg-brand-gold text-brand-black rounded hover:bg-white transition-colors font-medium min-w-[120px]"
-          >
-            {loading ? 'Saving...' : 'Save Division'}
-          </button>
+      {/* Sticky Save Bar */}
+      <div className="fixed bottom-0 left-0 md:left-64 right-0 p-3 sm:p-4 bg-[#0C0B10]/95 backdrop-blur-md border-t border-brand-border z-40">
+        <div className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
+          <div className="flex items-center justify-start">
+            {initialData?.id && (
+               <DeleteServiceButton id={initialData.id} title={initialData.title} />
+            )}
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button 
+              type="button"
+              onClick={() => router.push('/admin/services')}
+              className="flex-1 sm:flex-none px-4 py-2 text-xs sm:text-sm border border-brand-border text-brand-cream rounded-lg hover:bg-brand-border transition-colors font-medium text-center"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              disabled={loading}
+              className="flex-1 sm:flex-none px-5 py-2 text-xs sm:text-sm bg-brand-gold text-brand-black rounded-lg hover:bg-white transition-colors font-semibold text-center shadow-lg min-w-[110px]"
+            >
+              {loading ? 'Saving...' : 'Save Division'}
+            </button>
+          </div>
         </div>
       </div>
     </form>

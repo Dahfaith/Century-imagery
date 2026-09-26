@@ -19,24 +19,24 @@ export default async function JournalPage() {
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto w-full">
-      <div className="flex justify-between items-center mb-8">
+    <div className="space-y-6 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-display font-medium text-brand-cream">Editorial Journal</h1>
-          <p className="text-brand-muted mt-2">Manage articles, case studies, and studio updates.</p>
+          <h1 className="text-2xl sm:text-3xl font-display font-medium text-brand-cream">Editorial Journal</h1>
+          <p className="text-xs sm:text-sm text-brand-muted mt-1">Manage articles, case studies, and studio updates.</p>
         </div>
         <Link 
           href="/admin/journal/new" 
-          className="flex items-center space-x-2 px-4 py-2 bg-brand-gold text-brand-black font-semibold rounded hover:bg-white transition-colors"
+          className="self-start sm:self-auto flex items-center space-x-2 px-4 py-2 bg-brand-gold text-brand-black text-xs sm:text-sm font-semibold rounded-lg hover:bg-white transition-colors shadow-lg"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           <span>New Article</span>
         </Link>
       </div>
 
       {posts && posts.length > 0 ? (
-        <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden shadow-2xl mt-6">
-          <table className="w-full text-left border-collapse">
+        <div className="bg-brand-surface border border-brand-border rounded-xl overflow-x-auto shadow-2xl">
+          <table className="min-w-[640px] w-full text-left border-collapse">
             <thead>
               <tr className="bg-brand-surface-card border-b border-brand-border">
                 <th className="p-4 text-sm font-medium text-brand-muted uppercase tracking-wider">Article</th>

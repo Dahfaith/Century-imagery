@@ -117,7 +117,7 @@ export async function syncVideoStatus(id: string, uid: string) {
   }
 }
 
-export async function getImageUploadUrl(filename: string, mimeType: string) {
+export async function getR2UploadUrl(filename: string, mimeType: string) {
   await requireAuth(['super_admin', 'admin', 'editor'])
   
   if (!process.env.CLOUDFLARE_R2_ACCOUNT_ID || !process.env.CLOUDFLARE_R2_ACCESS_KEY_ID) {
@@ -125,28 +125,33 @@ export async function getImageUploadUrl(filename: string, mimeType: string) {
   }
 
   try {
-    const data = await createR2PresignedUrl(filename, mimeType)
+    const data = await createR2PresignedUrl(filename, mimeType || 'application/octet-stream')
     return { data }
   } catch (error: any) {
     return { error: error.message }
   }
 }
 
-export async function saveImageMedia(key: string, publicUrl: string, filename: string, fileSize: number, mimeType: string, altText: string) {
+export async function getImageUploadUrl(filename: string, mimeType: string) {
+  return getR2UploadUrl(filename, mimeType)
+}
+
+export async function saveR2Media(key: string, publicUrl: string, filename: string, fileSize: number, mimeType: string, altText: string) {
   await requireAuth(['super_admin', 'admin', 'editor'])
   const supabase = await createClient()
 
   try {
+    const isVideo = mimeType?.startsWith('video/') || /\.(mp4|webm|mov|m4v|mkv)$/i.test(filename)
     const mediaData = {
       filename: filename,
       original_filename: filename,
-      media_type: 'image',
-      mime_type: mimeType,
+      media_type: isVideo ? 'video' : 'image',
+      mime_type: mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
       file_size: fileSize,
       provider: 'cloudflare_r2',
       provider_asset_id: key,
       thumbnail_url: publicUrl,
-      playback_url: publicUrl, // images use the same url for playback/display
+      playback_url: publicUrl,
       status: 'ready',
       alt_text: altText,
     }
@@ -155,10 +160,14 @@ export async function saveImageMedia(key: string, publicUrl: string, filename: s
     if (error) throw new Error(error.message)
 
     revalidatePath('/', 'layout')
-  revalidatePath('/admin/media')
+    revalidatePath('/admin/media')
     return { success: true }
   } catch (error: any) {
     return { error: error.message }
   }
+}
+
+export async function saveImageMedia(key: string, publicUrl: string, filename: string, fileSize: number, mimeType: string, altText: string) {
+  return saveR2Media(key, publicUrl, filename, fileSize, mimeType, altText)
 }
 

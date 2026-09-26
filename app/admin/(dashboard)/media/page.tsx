@@ -132,7 +132,28 @@ export default async function MediaPage({
           {mediaItems.map((item) => (
             <div key={item.id} className="bg-brand-surface-card border border-brand-border rounded-xl overflow-hidden group hover:border-brand-gold/30 transition-colors flex flex-col">
               <div className="aspect-video bg-brand-surface-elevated relative overflow-hidden">
-                {item.thumbnail_url ? (
+                {item.media_type === 'video' ? (
+                  item.playback_url ? (
+                    <video 
+                      src={item.playback_url} 
+                      preload="metadata"
+                      poster={item.thumbnail_url?.match(/\.(mp4|webm|mov|m4v)$/i) ? undefined : (item.thumbnail_url || undefined)}
+                      className="w-full h-full object-cover pointer-events-none"
+                      muted
+                      playsInline
+                    />
+                  ) : item.thumbnail_url && !item.thumbnail_url.match(/\.(mp4|webm|mov|m4v)$/i) ? (
+                    <img 
+                      src={item.thumbnail_url} 
+                      alt={item.alt_text || item.filename} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-brand-muted">
+                      <Film className="w-8 h-8 opacity-40 text-brand-gold" />
+                    </div>
+                  )
+                ) : item.thumbnail_url ? (
                   <img 
                     src={item.thumbnail_url} 
                     alt={item.alt_text || item.filename} 
@@ -140,7 +161,7 @@ export default async function MediaPage({
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-brand-muted">
-                    {item.media_type === 'video' ? <Film className="w-8 h-8 opacity-20" /> : <ImageIcon className="w-8 h-8 opacity-20" />}
+                    <ImageIcon className="w-8 h-8 opacity-20" />
                   </div>
                 )}
                 
