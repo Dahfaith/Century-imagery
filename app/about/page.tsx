@@ -58,8 +58,12 @@ export default async function AboutPage() {
             </div>
 
             <div className="space-y-5 text-base sm:text-lg text-brand-muted font-sans font-normal leading-relaxed">
-              {content?.bio?.text ? (
-                <p className="text-brand-cream/90 font-normal">{content.bio.text}</p>
+              {content?.bio?.text && content.bio.text.trim().length > 30 && !content.bio.text.includes("Founder and lead director...") ? (
+                content.bio.text.split(/\n\s*\n/).map((para: string, idx: number) => (
+                  <p key={idx} className={idx === 0 ? "text-brand-cream/90 font-normal" : ""}>
+                    {para}
+                  </p>
+                ))
               ) : (
                 <>
                   <p className="text-brand-cream/90 font-normal">

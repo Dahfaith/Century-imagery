@@ -37,7 +37,7 @@ function ensureMedia(url: string | undefined): string | null {
   const filename = url.split('/').pop() || 'media';
   
   sql += `
-INSERT INTO media (id, file_name, file_size, mime_type, media_type, provider, provider_url, status)
+INSERT INTO media (id, filename, file_size, mime_type, media_type, provider, provider_url, status)
 VALUES (
   '${id}',
   ${escapeSql(filename)},
@@ -47,14 +47,14 @@ VALUES (
   'r2',
   ${escapeSql(url)},
   'ready'
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO NOTHING;
 `;
   return id;
 }
 
 sql += `-- 1. MEDIA INSERTS\n`;
 
-const projectUpdates = projects.map(p => {
+const projectUpdates = projects.map((p: any) => {
   const heroId = ensureMedia(p.heroImage || p.videoUrl); // Projects often had heroImage or videoUrl
   const coverId = ensureMedia(p.heroImage || p.gallery?.[0]);
   
@@ -65,8 +65,11 @@ const projectUpdates = projects.map(p => {
       if (gId) {
         gallerySql += `
 INSERT INTO project_media (project_id, media_id, sort_order)
-SELECT id, '${gId}', ${i} FROM projects WHERE slug = ${escapeSql(p.slug)}
-ON CONFLICT DO NOTHING;
+SELECT p.id, '${gId}', ${i} FROM projects p
+WHERE p.slug = ${escapeSql(p.slug)}
+  AND NOT EXISTS (
+    SELECT 1 FROM project_media pm WHERE pm.project_id = p.id AND pm.media_id = '${gId}'
+  );
 `;
       }
     });
@@ -111,6 +114,17 @@ journalUpdates.forEach(ju => {
   }
 });
 
+sql += `\n-- 5. RESTORE FULL ABOUT PAGE CONTENT\n`;
+sql += `UPDATE pages 
+SET content = jsonb_build_object(
+  'hero', jsonb_build_object('heading', 'ABOUT CENTURY', 'description', 'STUDIO PROFILE • CENTURY IMAGERY LLC'),
+  'bio', jsonb_build_object(
+    'heading', 'WE DIRECT CINEMA. ARCHITECTING LEGACIES.',
+    'text', E'Century Imagery is an elite visual storytelling and cinematography brand with deep experience across entertainment, corporate, cultural, and public-sector productions.\\n\\nOperating from studio headquarters in Ibadan with active deployments in Lagos and worldwide transit, our unit serves as primary video architect for landmark nightlife, documents state government protocol across consecutive years, and directs campaign visuals for global music icons and continental tech accelerators.\\n\\nWith portfolio releases achieving over 400,000+ organic views, we translate pulsating energy and solemn ceremony into everlasting motion picture art.'
+  )
+)
+WHERE slug = 'about';
+`;
 
 const outPath = path.join(__dirname, '../supabase/migrations/20260925000007_seed_legacy_media.sql');
 fs.writeFileSync(outPath, sql);
