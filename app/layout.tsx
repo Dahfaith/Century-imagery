@@ -18,6 +18,7 @@ export const viewport: Viewport = {
 
 import { getSiteSettings } from "@/lib/api";
 import { Toaster } from "react-hot-toast";
+import NextTopLoader from 'nextjs-toploader';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -65,6 +66,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${figtree.className} bg-brand-black text-brand-cream font-sans antialiased selection:bg-brand-gold selection:text-brand-black min-h-screen`}
       >
+        <NextTopLoader color="#dcb450" showSpinner={true} shadow="0 0 10px #dcb450,0 0 5px #dcb450" />
         <Toaster 
           position="top-center" 
           toastOptions={{

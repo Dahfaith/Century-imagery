@@ -82,38 +82,22 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
 
   return (
     <div ref={containerRef} className={cn("relative w-full h-full overflow-hidden bg-brand-surface", className)}>
-      {/* 1. Instant High-Res Poster Layer: always rendered immediately so there are ZERO blank/black boxes */}
-      <div
-        className={cn(
-          "absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-out",
-          isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
-        )}
-        style={{
-          backgroundImage: `url(${fallbackPoster}), url('/brand/hero-mockup-gold.png')`,
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 2. Video element: only preloaded and played when in view */}
-      {!hasError && src && (
+      {/* Video element: only preloaded and played when in view */}
+      {!hasError && src ? (
         <video
           ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
-          preload={isInView ? "metadata" : "none"}
+          preload={isInView ? "auto" : "none"}
           poster={fallbackPoster}
           onPlaying={() => setIsPlaying(true)}
-          onLoadedData={() => setIsPlaying(true)}
           onError={() => {
             setHasError(true);
             setIsPlaying(false);
           }}
-          className={cn(
-            "w-full h-full object-cover transition-opacity duration-700 ease-out",
-            isPlaying ? "opacity-100" : "opacity-0"
-          )}
+          className="w-full h-full object-cover"
         >
           {mp4Src && <source src={mp4Src} type="video/mp4" />}
           <source
@@ -121,6 +105,13 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
             type={src.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"}
           />
         </video>
+      ) : (
+        <div
+          className="w-full h-full bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${fallbackPoster}), url('/brand/hero-mockup-gold.png')`,
+          }}
+        />
       )}
     </div>
   );
