@@ -3,12 +3,18 @@
 import { useActionState } from 'react'
 import { deleteProject, toggleProjectStatus } from '../actions'
 import { Loader2, Trash2, CheckCircle2, XCircle } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 
 export function DeleteProjectButton({ id, title }: { id: string, title: string }) {
   const [state, formAction, isPending] = useActionState(
     async () => {
       if (confirm(`Are you sure you want to delete "${title}"? This cannot be undone.`)) {
-        await deleteProject(id)
+        const res = await deleteProject(id)
+        if (res?.error) {
+          toast.error(res.error)
+        } else {
+          toast.success('Project deleted')
+        }
       }
       return null
     },
@@ -33,7 +39,12 @@ export function ToggleStatusButton({ id, currentStatus }: { id: string, currentS
   const [state, formAction, isPending] = useActionState(
     async () => {
       const newStatus = currentStatus === 'published' ? 'draft' : 'published'
-      await toggleProjectStatus(id, newStatus)
+      const res = await toggleProjectStatus(id, newStatus)
+      if (res?.error) {
+        toast.error(res.error)
+      } else {
+        toast.success(`Project ${newStatus === 'published' ? 'published' : 'moved to draft'}`)
+      }
       return null
     },
     null

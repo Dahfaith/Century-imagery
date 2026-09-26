@@ -14,6 +14,8 @@ interface ContentBlock {
   media_id?: string;
 }
 
+import { toast } from 'react-hot-toast'
+
 export function JournalForm({ 
   initialData, 
   mediaOptions 
@@ -23,8 +25,6 @@ export function JournalForm({
 }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   // Form State
   const [title, setTitle] = useState(initialData?.title || '')
@@ -75,8 +75,6 @@ export function JournalForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError('')
-    setSuccess('')
 
     const postData = {
       title,
@@ -95,23 +93,20 @@ export function JournalForm({
     const res = await saveJournalPost(initialData?.id || null, postData)
 
     if (res.error) {
-      setError(res.error)
+      toast.error(res.error)
       setLoading(false)
     } else {
-      setSuccess('Article saved successfully!')
+      toast.success('Article saved successfully!')
       if (!initialData?.id) {
-        setTimeout(() => router.push(`/admin/journal`), 1000)
+        setTimeout(() => router.push(`/admin/journal`), 500)
       } else {
         setLoading(false)
-        setTimeout(() => setSuccess(''), 3000)
       }
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 max-w-4xl mx-auto pb-40">
-      {error && <div className="p-3 sm:p-4 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-xs sm:text-sm">{error}</div>}
-      {success && <div className="p-3 sm:p-4 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg flex items-center text-xs sm:text-sm"><CheckCircle2 className="w-4 h-4 mr-2 flex-shrink-0"/> {success}</div>}
       
       {/* Metadata Section */}
       <div className="bg-brand-surface-card p-4 sm:p-6 rounded-xl border border-brand-border space-y-5 sm:space-y-6 shadow-xl">

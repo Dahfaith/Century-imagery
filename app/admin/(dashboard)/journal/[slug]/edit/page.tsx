@@ -3,15 +3,15 @@ import { requireAuth } from '@/lib/supabase/auth'
 import { JournalForm } from '../../components/JournalForm'
 import { notFound } from 'next/navigation'
 
-export default async function EditJournalPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditJournalPage({ params }: { params: Promise<{ slug: string }> }) {
   await requireAuth(['super_admin', 'admin', 'editor'])
   const supabase = await createClient()
 
-  const { id } = await params
+  const { slug } = await params
 
   const { data: post, error: postError } = await (supabase.from('journal_posts') as any)
     .select('*')
-    .eq('id', id)
+    .eq('slug', slug)
     .single()
 
   if (postError || !post) {

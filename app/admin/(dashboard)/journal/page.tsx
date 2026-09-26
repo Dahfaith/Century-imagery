@@ -88,7 +88,7 @@ export default async function JournalPage() {
                         <Eye className="w-4 h-4" />
                       </a>
                       <Link 
-                        href={`/admin/journal/${post.id}/edit`}
+                        href={`/admin/journal/${post.slug}/edit`}
                         className="p-2 text-brand-muted hover:text-brand-gold hover:bg-brand-gold/10 rounded transition-colors"
                         title="Edit Article"
                       >

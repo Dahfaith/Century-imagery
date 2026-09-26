@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { deleteJournalPost, seedJournalPosts } from '../actions'
 import { Trash2, FileText, AlertTriangle } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 
 export function SeedJournalButton({ postCount }: { postCount: number }) {
   const [loading, setLoading] = useState(false)
@@ -17,7 +18,12 @@ export function SeedJournalButton({ postCount }: { postCount: number }) {
       <button 
         onClick={async () => {
           setLoading(true)
-          await seedJournalPosts()
+          const res = await seedJournalPosts()
+          if (res?.error) {
+            toast.error(res.error)
+          } else {
+            toast.success('Journal seeded successfully!')
+          }
           setLoading(false)
         }}
         disabled={loading}
@@ -37,8 +43,10 @@ export function DeletePostButton({ id, title }: { id: string, title: string }) {
       setLoading(true)
       const res = await deleteJournalPost(id)
       if (res?.error) {
-        alert(res.error)
+        toast.error(res.error)
         setLoading(false)
+      } else {
+        toast.success('Article deleted')
       }
     }
   }

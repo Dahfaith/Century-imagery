@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateBookingStatus, updateBookingNotes, deleteBooking } from '../actions'
 import { Save, Trash2, CheckCircle2 } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 
 export function BookingManager({ booking }: { booking: any }) {
   const router = useRouter()
@@ -21,8 +22,10 @@ export function BookingManager({ booking }: { booking: any }) {
     
     const res = await updateBookingStatus(booking.id, newStatus)
     if (res.error) {
-      alert(res.error)
+      toast.error(res.error)
       setStatus(booking.status) // revert on error
+    } else {
+      toast.success('Status updated successfully')
     }
     
     setLoadingStatus(false)
@@ -32,7 +35,9 @@ export function BookingManager({ booking }: { booking: any }) {
     setLoadingNotes(true)
     const res = await updateBookingNotes(booking.id, notes)
     if (res.error) {
-      alert(res.error)
+      toast.error(res.error)
+    } else {
+      toast.success('Internal notes saved')
     }
     setLoadingNotes(false)
   }
@@ -42,9 +47,10 @@ export function BookingManager({ booking }: { booking: any }) {
       setIsDeleting(true)
       const res = await deleteBooking(booking.id)
       if (res.error) {
-        alert(res.error)
+        toast.error(res.error)
         setIsDeleting(false)
       } else {
+        toast.success('Booking deleted')
         router.push('/admin/bookings')
       }
     }

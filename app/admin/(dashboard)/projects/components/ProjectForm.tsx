@@ -3,8 +3,10 @@
 import { useActionState, useState } from 'react'
 import { createProject, updateProject } from '../actions'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Loader2, ArrowLeft, Save } from 'lucide-react'
 import { DeleteProjectButton } from './ProjectActions'
+import { toast } from 'react-hot-toast'
 
 type MediaItem = {
   id: string
@@ -37,15 +39,22 @@ export function ProjectForm({
   mediaList: MediaItem[] 
 }) {
   const isEditing = !!project
+  const router = useRouter()
 
   const [state, formAction, isPending] = useActionState(
     async (prevState: any, formData: FormData) => {
       if (isEditing) {
         const result = await updateProject(project.id, formData)
-        return { error: result?.error || null }
+        if (result?.error) return { error: result.error }
+        toast.success('Project updated!')
+        router.push('/admin/projects')
+        return { error: null }
       } else {
         const result = await createProject(formData)
-        return { error: result?.error || null }
+        if (result?.error) return { error: result.error }
+        toast.success('Project created!')
+        router.push('/admin/projects')
+        return { error: null }
       }
     },
     { error: null }

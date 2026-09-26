@@ -8,16 +8,16 @@ export const metadata: Metadata = {
   title: 'Edit Project | CMS',
 }
 
-export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   await requireAuth(['super_admin', 'admin', 'editor'])
-  const { id } = await params
+  const { slug } = await params
   const supabase = await createClient()
 
   // Fetch project
   const { data: project } = await supabase
     .from('projects')
     .select('*')
-    .eq('id', id)
+    .eq('slug', slug)
     .single()
 
   if (!project) {

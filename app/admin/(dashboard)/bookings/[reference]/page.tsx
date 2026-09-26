@@ -7,14 +7,14 @@ import { BookingManager } from '../components/BookingManager'
 
 export const dynamic = 'force-dynamic'
 
-export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function BookingDetailPage({ params }: { params: Promise<{ reference: string }> }) {
   await requireAuth(['super_admin', 'admin'])
-  const { id } = await params
+  const { reference } = await params
   const supabase = await createClient()
 
   const { data: booking, error } = await (supabase.from('bookings') as any)
     .select('*')
-    .eq('id', id)
+    .eq('reference_code', reference)
     .single()
 
   if (error || !booking) {

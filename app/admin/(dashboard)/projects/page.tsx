@@ -163,7 +163,7 @@ export default async function ProjectsPage({
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <Link 
-                          href={`/admin/projects/${project.id}/edit`}
+                          href={`/admin/projects/${project.slug}/edit`}
                           className="text-brand-muted hover:text-brand-gold p-2 transition-colors"
                           title="Edit project"
                         >
