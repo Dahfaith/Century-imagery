@@ -17,6 +17,7 @@ export const viewport: Viewport = {
 };
 
 import { getSiteSettings } from "@/lib/api";
+import { Toaster } from "react-hot-toast";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -64,6 +65,30 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${figtree.className} bg-brand-black text-brand-cream font-sans antialiased selection:bg-brand-gold selection:text-brand-black min-h-screen`}
       >
+        <Toaster 
+          position="top-center" 
+          toastOptions={{
+            style: {
+              background: '#0a0a0a',
+              color: '#f8f8f2',
+              border: '1px solid rgba(220, 180, 80, 0.4)',
+              fontFamily: 'var(--font-figtree)',
+              borderRadius: '8px',
+            },
+            success: {
+              iconTheme: {
+                primary: '#dcb450',
+                secondary: '#0a0a0a',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#0a0a0a',
+              }
+            }
+          }} 
+        />
         {children}
       </body>
     </html>

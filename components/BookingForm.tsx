@@ -18,6 +18,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface FormData {
   fullName: string;
@@ -189,7 +190,7 @@ export function BookingForm() {
       clearTimeout(uxTimer)
 
       if (res.error) {
-        alert(res.error)
+        toast.error(res.error)
         setIsSubmitting(false)
         return
       }
@@ -206,7 +207,7 @@ export function BookingForm() {
     } catch (error) {
       clearTimeout(uxTimer)
       console.error(error)
-      alert("An unexpected error occurred. Please try again.")
+      toast.error("An unexpected error occurred. Please try again.")
       setIsSubmitting(false)
     }
   };

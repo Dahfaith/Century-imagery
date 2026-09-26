@@ -47,8 +47,6 @@ export async function submitBooking(formData: BookingData) {
       status: 'new'
       // admin_notes is explicitly omitted
     })
-    .select('reference_code')
-    .single()
 
   if (error) {
     console.error('Booking Insert Error:', error)
