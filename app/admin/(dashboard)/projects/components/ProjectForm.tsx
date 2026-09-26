@@ -11,6 +11,11 @@ type MediaItem = {
   filename: string | null
   alt_text: string | null
   status: string | null
+  media_type?: string | null
+  thumbnail_url?: string | null
+  provider_url?: string | null
+  playback_url?: string | null
+  file_size?: number | null
 }
 
 const CATEGORIES = [
@@ -48,6 +53,8 @@ export function ProjectForm({
 
   const [title, setTitle] = useState(project?.title || '')
   const [slug, setSlug] = useState(project?.slug || '')
+  const [coverMediaId, setCoverMediaId] = useState(project?.cover_media_id || '')
+  const [heroMediaId, setHeroMediaId] = useState(project?.hero_media_id || '')
 
   // Generate slug dynamically if not editing and slug is untouched, but allow manual edits
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,49 +147,123 @@ export function ProjectForm({
           </div>
 
           {/* Media Selectors */}
-          <div className="bg-brand-surface-card border border-brand-border rounded-xl p-6 space-y-4">
-            <h2 className="text-lg font-medium text-brand-cream mb-4 border-b border-brand-border pb-2">Media</h2>
+          <div className="bg-brand-surface-card border border-brand-border rounded-xl p-6 space-y-5">
+            <div>
+              <h2 className="text-lg font-medium text-brand-cream border-b border-brand-border pb-2">Media Assets</h2>
+              <p className="text-xs text-brand-muted mt-1.5">
+                Configure the primary thumbnail cover and optional cinematic hero video for this project.
+              </p>
+            </div>
             
+            {/* Cover Media */}
             <div className="space-y-2">
-              <label className="text-xs font-medium text-brand-muted uppercase tracking-wider block">Cover Media</label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-brand-cream uppercase tracking-wider block">
+                  Cover Media (Primary Poster)
+                </label>
+                <span className="text-[11px] text-brand-gold font-mono">Used for portfolio cards</span>
+              </div>
+              <p className="text-xs text-brand-muted">
+                Displayed as the main visual across the Work portfolio, archives, and homepage.
+              </p>
               <select
                 name="cover_media_id"
-                defaultValue={project?.cover_media_id || ''}
-                className="w-full bg-brand-surface-elevated border border-brand-border text-brand-cream px-4 py-2 rounded-lg focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 text-sm transition-colors"
+                value={coverMediaId}
+                onChange={(e) => setCoverMediaId(e.target.value)}
+                className="w-full bg-brand-surface-elevated border border-brand-border text-brand-cream px-4 py-2.5 rounded-lg focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 text-sm transition-colors font-mono"
               >
-                <option value="">None selected</option>
+                <option value="">None selected (Default placeholder)</option>
                 {mediaList.map((m) => {
                   const label = m.filename || m.alt_text || 'Unnamed Media'
                   const isReady = m.status === 'ready'
+                  const typeTag = m.media_type === 'video' ? '[VIDEO]' : '[IMAGE]'
+                  const sizeTag = m.file_size ? ` (${m.file_size < 1048576 ? (m.file_size/1024).toFixed(0) + ' KB' : (m.file_size/1048576).toFixed(1) + ' MB'})` : ''
                   return (
                     <option key={m.id} value={m.id} disabled={!isReady}>
-                      {label} {!isReady ? `(${m.status})` : ''}
+                      {typeTag} {label}{sizeTag} {!isReady ? `(${m.status})` : ''}
                     </option>
                   )
                 })}
               </select>
+
+              {/* Cover Preview Thumbnail */}
+              {(() => {
+                const sel = mediaList.find((m) => m.id === coverMediaId)
+                if (!sel) return null
+                const previewUrl = sel.thumbnail_url || sel.playback_url || sel.provider_url
+                if (!previewUrl) return null
+                return (
+                  <div className="mt-2 p-2 bg-brand-surface-elevated rounded-lg border border-brand-border flex items-center gap-3">
+                    <div className="w-16 h-10 rounded bg-black overflow-hidden flex-shrink-0 relative">
+                      {sel.media_type === 'video' ? (
+                        <video src={previewUrl} className="w-full h-full object-cover" muted />
+                      ) : (
+                        <img src={previewUrl} alt="Cover preview" className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="text-xs text-brand-cream truncate flex-1 font-mono">
+                      <span className="text-brand-gold">{sel.media_type?.toUpperCase()}</span>: {sel.filename}
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-brand-muted uppercase tracking-wider block">Hero Media</label>
+            {/* Hero Media */}
+            <div className="space-y-2 pt-3 border-t border-brand-border/60">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-brand-cream uppercase tracking-wider block">
+                  Hero Video (Case Study Player)
+                </label>
+                <span className="text-[11px] text-brand-muted font-mono">Optional</span>
+              </div>
+              <p className="text-xs text-brand-muted">
+                Cinematic video loaded inside the full-screen player on the project page. If &quot;None selected&quot;, your cover image is used instead.
+              </p>
               <select
                 name="hero_media_id"
-                defaultValue={project?.hero_media_id || ''}
-                className="w-full bg-brand-surface-elevated border border-brand-border text-brand-cream px-4 py-2 rounded-lg focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 text-sm transition-colors"
+                value={heroMediaId}
+                onChange={(e) => setHeroMediaId(e.target.value)}
+                className="w-full bg-brand-surface-elevated border border-brand-border text-brand-cream px-4 py-2.5 rounded-lg focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 text-sm transition-colors font-mono"
               >
-                <option value="">None selected</option>
+                <option value="">None selected (Display cover image only)</option>
                 {mediaList.map((m) => {
                   const label = m.filename || m.alt_text || 'Unnamed Media'
                   const isReady = m.status === 'ready'
+                  const typeTag = m.media_type === 'video' ? '[VIDEO]' : '[IMAGE]'
+                  const sizeTag = m.file_size ? ` (${m.file_size < 1048576 ? (m.file_size/1024).toFixed(0) + ' KB' : (m.file_size/1048576).toFixed(1) + ' MB'})` : ''
                   return (
                     <option key={m.id} value={m.id} disabled={!isReady}>
-                      {label} {!isReady ? `(${m.status})` : ''}
+                      {typeTag} {label}{sizeTag} {!isReady ? `(${m.status})` : ''}
                     </option>
                   )
                 })}
               </select>
+
+              {/* Hero Preview */}
+              {(() => {
+                const sel = mediaList.find((m) => m.id === heroMediaId)
+                if (!sel) return null
+                const previewUrl = sel.thumbnail_url || sel.playback_url || sel.provider_url
+                if (!previewUrl) return null
+                return (
+                  <div className="mt-2 p-2 bg-brand-surface-elevated rounded-lg border border-brand-border flex items-center gap-3">
+                    <div className="w-16 h-10 rounded bg-black overflow-hidden flex-shrink-0 relative">
+                      {sel.media_type === 'video' ? (
+                        <video src={previewUrl} className="w-full h-full object-cover" muted />
+                      ) : (
+                        <img src={previewUrl} alt="Hero preview" className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="text-xs text-brand-cream truncate flex-1 font-mono">
+                      <span className="text-brand-gold">{sel.media_type?.toUpperCase()}</span>: {sel.filename}
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
-            <p className="text-xs text-brand-muted">Note: Only "ready" media can be selected.</p>
+
+            <p className="text-[11px] text-brand-muted">Note: Only &quot;ready&quot; media from the Media Library can be selected.</p>
           </div>
         </div>
 

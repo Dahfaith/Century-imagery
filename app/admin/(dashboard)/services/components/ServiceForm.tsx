@@ -159,19 +159,51 @@ export function ServiceForm({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-brand-muted mb-2">Cover Media (from Media Library)</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-brand-cream">Cover Media (from Media Library)</label>
+              <span className="text-[11px] text-brand-gold font-mono">Image or Video</span>
+            </div>
+            <p className="text-xs text-brand-muted mb-2">
+              Select an image to display a static cover photo, or select a video to play a looping cinematic motion clip.
+            </p>
             <select 
               value={coverMediaId} 
               onChange={(e) => setCoverMediaId(e.target.value)}
-              className="w-full bg-brand-surface border border-brand-border rounded p-3 text-brand-cream focus:border-brand-gold outline-none transition-colors appearance-none"
+              className="w-full bg-brand-surface border border-brand-border rounded p-3 text-brand-cream focus:border-brand-gold outline-none transition-colors appearance-none font-mono text-sm"
             >
-              <option value="">No Cover Media</option>
-              {mediaOptions.map(media => (
-                <option key={media.id} value={media.id} disabled={media.status !== 'ready'}>
-                  {media.filename} {media.status !== 'ready' ? '(Processing)' : ''}
-                </option>
-              ))}
+              <option value="">No Cover Media (Default)</option>
+              {mediaOptions.map(media => {
+                const typeTag = media.media_type === 'video' ? '[VIDEO]' : '[IMAGE]'
+                const sizeTag = media.file_size ? ` (${media.file_size < 1048576 ? (media.file_size/1024).toFixed(0) + ' KB' : (media.file_size/1048576).toFixed(1) + ' MB'})` : ''
+                return (
+                  <option key={media.id} value={media.id} disabled={media.status !== 'ready'}>
+                    {typeTag} {media.filename}{sizeTag} {media.status !== 'ready' ? '(Processing)' : ''}
+                  </option>
+                )
+              })}
             </select>
+
+            {/* Live Preview */}
+            {(() => {
+              const sel = mediaOptions.find(m => m.id === coverMediaId)
+              if (!sel) return null
+              const previewUrl = sel.thumbnail_url || sel.playback_url || sel.provider_url
+              if (!previewUrl) return null
+              return (
+                <div className="mt-2.5 p-2 bg-brand-surface rounded-lg border border-brand-border flex items-center gap-3">
+                  <div className="w-16 h-10 rounded bg-black overflow-hidden flex-shrink-0 relative">
+                    {sel.media_type === 'video' ? (
+                      <video src={previewUrl} className="w-full h-full object-cover" muted />
+                    ) : (
+                      <img src={previewUrl} alt="Cover preview" className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                  <div className="text-xs text-brand-cream truncate flex-1 font-mono">
+                    <span className="text-brand-gold">{sel.media_type?.toUpperCase()}</span>: {sel.filename}
+                  </div>
+                </div>
+              )
+            })()}
           </div>
           <div>
             <label className="block text-sm font-medium text-brand-muted mb-2">Icon (Lucide name or SVG path)</label>

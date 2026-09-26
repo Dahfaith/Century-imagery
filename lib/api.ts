@@ -206,10 +206,12 @@ function mapProject(dbProject: any): PublicProject {
     fullDescription: dbProject.description || '',
     story: undefined,
     heroImage: (coverMedia && coverMedia.media_type === 'image' ? getMediaUrl(coverMedia) : undefined)
-      || (heroMedia && heroMedia.media_type === 'image' ? getMediaUrl(heroMedia) : undefined)
       || getMediaUrl(coverMedia)
+      || (heroMedia && heroMedia.media_type === 'image' ? getMediaUrl(heroMedia) : undefined)
       || '/brand/hero-mockup-gold.png',
-    heroVideo: getVideoUrl(heroMedia) || getVideoUrl(coverMedia) || LEGACY_PROJECT_VIDEOS[dbProject.slug] || undefined,
+    heroVideo: (heroMedia ? getVideoUrl(heroMedia) : undefined)
+      || (coverMedia && coverMedia.media_type === 'video' ? getVideoUrl(coverMedia) : undefined)
+      || (!coverMedia && !heroMedia ? LEGACY_PROJECT_VIDEOS[dbProject.slug] : undefined),
     gallery: galleryItems,
     services,
     credits,
@@ -276,8 +278,23 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
     const items: any[] = (svc.service_items || []).sort((a: any, b: any) => a.sort_order - b.sort_order)
     const firstItem = items[0] || {}
     const coverMedia = svc.cover_media
-    const videoUrl = getVideoUrl(coverMedia) || LEGACY_SERVICE_VIDEOS[svc.slug] || undefined
-    const imagePlaceholder = getMediaUrl(coverMedia)
+    let videoUrl: string | undefined = undefined
+    let imagePlaceholder: string = '/brand/hero-mockup-gold.png'
+
+    if (coverMedia) {
+      if (coverMedia.media_type === 'video') {
+        videoUrl = getVideoUrl(coverMedia)
+        imagePlaceholder = coverMedia.thumbnail_url || getMediaUrl(coverMedia)
+      } else {
+        // User assigned an image: show image, do NOT play a video over it
+        videoUrl = undefined
+        imagePlaceholder = getMediaUrl(coverMedia)
+      }
+    } else {
+      // Fallback only if no cover_media assigned
+      videoUrl = LEGACY_SERVICE_VIDEOS[svc.slug] || undefined
+      imagePlaceholder = '/brand/hero-mockup-gold.png'
+    }
 
     return {
       id: svc.slug,

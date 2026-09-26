@@ -27,7 +27,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
   // Fetch available media for the selectors
   const { data: mediaList } = await (supabase
     .from('media')
-    .select('id, filename, alt_text, status')
+    .select('id, filename, alt_text, status, media_type, thumbnail_url, provider_url, playback_url, file_size')
     .order('created_at', { ascending: false }) as any)
 
   return (

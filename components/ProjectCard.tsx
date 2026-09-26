@@ -42,7 +42,7 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
                 playsInline
                 preload="metadata"
                 poster={project.heroImage}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out opacity-0 group-hover:opacity-100 group-hover:scale-[1.03] pointer-events-none"
               >
                 <source src={project.heroVideo} type={project.heroVideo.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
               </video>
@@ -119,7 +119,7 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
               playsInline
               preload="metadata"
               poster={project.heroImage}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out opacity-0 group-hover:opacity-100 group-hover:scale-[1.03] pointer-events-none"
             >
               <source src={project.heroVideo} type={project.heroVideo.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
             </video>

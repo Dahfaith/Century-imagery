@@ -8,7 +8,7 @@ export default async function NewServicePage() {
 
   // Fetch available ready media for the cover media picker
   const { data: mediaOptions, error } = await (supabase.from('media') as any)
-    .select('id, filename, status')
+    .select('id, filename, status, media_type, thumbnail_url, provider_url, playback_url, file_size')
     .order('created_at', { ascending: false })
 
   if (error) {
