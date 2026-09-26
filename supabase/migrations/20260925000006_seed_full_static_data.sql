@@ -1,5 +1,8 @@
 -- Full Data Seed from Original Static Files
 
+-- SCHEMA FIXES
+ALTER TABLE projects ALTER COLUMN year TYPE text USING year::text;
+
 -- SERVICES
 
 UPDATE services 
@@ -198,7 +201,7 @@ VALUES (
   'Rebel Empire: Nocturne Ascendant',
   'Club Rebel Empire, Osogbo',
   'ENTERTAINMENT',
-  2024 – 2026,
+  '2024 – 2026',
   'Osogbo, Osun State, Nigeria',
   'Serving as primary video architect to capture the pulse, high-octane lighting, and nocturnal prestige of Osogbo’s landmark nightlife empire.',
   'Century Imagery was commissioned as the foundational video architect for Club Rebel Empire. Crafting after-dark cinematography that translates pulsating soundscapes and high-energy nightlife into cinematic visual art.',
@@ -225,7 +228,7 @@ VALUES (
   'Oyo State Armed Forces Day (Tri-Year Protocol)',
   'Government of Oyo State',
   'DOCUMENTARY',
-  2023 – 2025,
+  '2023 – 2025',
   'Ibadan, Oyo State, Nigeria',
   'Documenting the ceremonial solemnity, executive parade, and military honors of Oyo State Armed Forces Remembrance Day across three consecutive years.',
   'Trusted by state executive protocol to architect the official multi-camera documentary archive of Oyo State Armed Forces Remembrance Day across three consecutive editions. Capturing solemn military wreaths, executive addresses, and historical honor with dignity.',
@@ -252,7 +255,7 @@ VALUES (
   'DJ Tunez: Sound & Vibrations',
   'DJ Tunez / Starboy Worldwide',
   'MUSIC',
-  2024,
+  '2024',
   'Lagos & Tour Circuits',
   'Electric concert cinematography and visual motion capturing global Afrobeats ambassador DJ Tunez in full sonic flight.',
   'Capturing the kinetic synergy between DJ Tunez, star guest performers, and tens of thousands of revellers. Fast anamorphic camera tracks, bass-sync cuts, and vibrant festival grading that crossed over 400,000+ views.',
@@ -279,7 +282,7 @@ VALUES (
   'Utiva: Accelerating African Tech Talent',
   'Utiva International',
   'CORPORATE',
-  2024,
+  '2024',
   'Lagos, Nigeria',
   'Human-centric corporate cinema documenting the transformative impact of African tech talent across the continent.',
   'Produced for premier tech learning accelerator Utiva. Blending high-production office narrative cinematography, inspiring student journeys, and sleek modern motion design to articulate tech empowerment.',
@@ -306,7 +309,7 @@ VALUES (
   'Iconic Legacies: High Profiles & Cultural Dignitaries',
   'Prominent Public Figures & Dignitaries',
   'CULTURAL',
-  2025,
+  '2025',
   'Ibadan & Lagos, Nigeria',
   'Intimate, high-contrast portraiture and legacy documentation for revered public figures, traditional icons, and statesmen.',
   'Commissioned to capture private celebrations, leadership retrospectives, and cultural milestones with the utmost discretion, dignified optical composition, and film-grade DaVinci Resolve color timing.',
@@ -333,7 +336,7 @@ VALUES (
   'The Sovereign Union: Luxury Event Cinema',
   'Century Legacy Private Commissions',
   'ENTERTAINMENT',
-  2025,
+  '2025',
   'Ibadan & Lagos, Nigeria',
   'A multi-camera heirloom film preserving the grandeur, traditional royalty, and emotional intimacy of high-society wedding celebration.',
   'A hallmark Century Imagery luxury wedding production. Mastered in 4K DCI with live sound score capture and film-grade DaVinci color grading to transform once-in-a-lifetime vows into an everlasting motion picture heirloom.',

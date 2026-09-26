@@ -3,21 +3,23 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { JournalArchiveGrid } from "@/components/JournalArchiveGrid";
-import { getJournalPosts } from "@/lib/api";
+import { getJournalPosts, getPageBySlug } from "@/lib/api";
 import { Sparkles, BookOpen } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: "The Journal | Notes on Cinema & Craft | Century Imagery LLC",
-  description:
-    "Cinematography breakdowns, director's notes, lighting plots, and cultural dispatches from founder Akin Idowu and the Century Imagery production team.",
-  openGraph: {
-    title: "The Journal | Century Imagery LLC",
-    description:
-      "Essays and breakdowns on cinematography, lighting ratios, DaVinci color grading, and African luxury visual culture.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("journal");
+  return {
+    title: page?.seo_title || "The Journal | Notes on Cinema & Craft | Century Imagery LLC",
+    description: page?.seo_description || "Cinematography breakdowns, director's notes, lighting plots, and cultural dispatches from founder Akin Idowu and the Century Imagery production team.",
+    openGraph: {
+      title: page?.seo_title || "The Journal | Century Imagery LLC",
+      description: page?.seo_description || "Essays and breakdowns on cinematography, lighting ratios, DaVinci color grading, and African luxury visual culture.",
+      images: page?.seo_image_url ? [{ url: page.seo_image_url }] : undefined,
+    },
+  };
+}
 
 export default async function JournalPage() {
   const articles = await getJournalPosts();

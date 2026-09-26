@@ -219,7 +219,7 @@ export interface Database {
           title: string
           client_name: string | null
           category: string | null
-          year: number | null
+          year: string | null
           location: string | null
           short_description: string | null
           description: string | null

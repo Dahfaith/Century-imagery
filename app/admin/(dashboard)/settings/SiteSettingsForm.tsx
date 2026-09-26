@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { saveSiteSettings } from './actions'
 import { CheckCircle2, Globe, Mail, Phone, AtSign } from 'lucide-react'
 
-export function SiteSettingsForm({ initialData }: { initialData: any }) {
+export function SiteSettingsForm({ initialData, media }: { initialData: any, media: any[] }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
@@ -13,6 +13,8 @@ export function SiteSettingsForm({ initialData }: { initialData: any }) {
   const [form, setForm] = useState({
     site_name: initialData.site_name || 'Century Imagery LLC',
     site_description: initialData.site_description || '',
+    logo_url: initialData.logo_url || '',
+    favicon_url: initialData.favicon_url || '',
     email: initialData.email || '',
     phone: initialData.phone || '',
     whatsapp: initialData.whatsapp || '',
@@ -25,9 +27,10 @@ export function SiteSettingsForm({ initialData }: { initialData: any }) {
     linkedin_url: initialData.linkedin_url || '',
     seo_title: initialData.seo_title || '',
     seo_description: initialData.seo_description || '',
+    seo_image_url: initialData.seo_image_url || '',
   })
 
-  const update = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const update = (key: string) => (e: any) =>
     setForm(prev => ({ ...prev, [key]: e.target.value }))
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,9 +77,31 @@ export function SiteSettingsForm({ initialData }: { initialData: any }) {
             <input type="text" value={form.footer_tagline} onChange={update('footer_tagline')} placeholder="e.g. Architecting Visual Legacies" className={inputClass} />
           </div>
         </div>
-        <div>
-          <label className={labelClass}>Site Description (short)</label>
-          <textarea value={form.site_description} onChange={update('site_description')} rows={2} className={inputClass} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+          <div>
+            <label className={labelClass}>Site Description (short)</label>
+            <textarea value={form.site_description} onChange={update('site_description')} rows={2} className={inputClass} />
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className={labelClass}>Logo</label>
+              <select value={form.logo_url} onChange={update('logo_url')} className={inputClass}>
+                <option value="">None</option>
+                {media.map(m => (
+                  <option key={m.id} value={m.provider_url}>{m.filename}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Favicon</label>
+              <select value={form.favicon_url} onChange={update('favicon_url')} className={inputClass}>
+                <option value="">None</option>
+                {media.map(m => (
+                  <option key={m.id} value={m.provider_url}>{m.filename}</option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -138,6 +163,15 @@ export function SiteSettingsForm({ initialData }: { initialData: any }) {
           <div>
             <label className={labelClass}>Default SEO Title</label>
             <input type="text" value={form.seo_title} onChange={update('seo_title')} placeholder="Century Imagery LLC | Motion Picture Studio" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Default SEO Image</label>
+            <select value={form.seo_image_url || ''} onChange={update('seo_image_url')} className={inputClass}>
+              <option value="">None</option>
+              {media.map(m => (
+                <option key={m.id} value={m.provider_url}>{m.filename}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className={labelClass}>Default SEO Description</label>

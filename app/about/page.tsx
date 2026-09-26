@@ -7,16 +7,18 @@ import { Sparkles, Film } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: "About The Studio | Century Imagery LLC",
-  description:
-    "Century Imagery LLC is a distinguished motion picture and cinematography studio directed by Founder & Executive Creative Director Akin Idowu.",
-  openGraph: {
-    title: "About Century Imagery LLC | Motion Picture Studio",
-    description:
-      "A distinguished Nigerian creative motion picture studio architecting evocative visual legacies to international cinema standards.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("about");
+  return {
+    title: page?.seo_title || "About The Studio | Century Imagery LLC",
+    description: page?.seo_description || "Century Imagery LLC is a distinguished motion picture and cinematography studio directed by Founder & Executive Creative Director Akin Idowu.",
+    openGraph: {
+      title: page?.seo_title || "About Century Imagery LLC | Motion Picture Studio",
+      description: page?.seo_description || "A distinguished Nigerian creative motion picture studio architecting evocative visual legacies to international cinema standards.",
+      images: page?.seo_image_url ? [{ url: page.seo_image_url }] : undefined,
+    },
+  };
+}
 
 export default async function AboutPage() {
   const page = await getPageBySlug("about");

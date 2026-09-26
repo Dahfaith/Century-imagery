@@ -11,6 +11,10 @@ function escapeSql(str: string | null | undefined): string {
 
 let sql = `-- Full Data Seed from Original Static Files\n\n`;
 
+// Fix schema limitation for year
+sql += `-- SCHEMA FIXES\n`;
+sql += `ALTER TABLE projects ALTER COLUMN year TYPE text USING year::text;\n\n`;
+
 // 1. SERVICES
 sql += `-- SERVICES\n`;
 services.forEach((s, index) => {
@@ -56,7 +60,7 @@ VALUES (
   ${escapeSql(p.title)},
   ${escapeSql(p.client)},
   ${escapeSql(p.category)},
-  ${p.year || 'NULL'},
+  ${escapeSql(p.year)},
   ${escapeSql(p.location)},
   ${escapeSql(p.shortDescription)},
   ${escapeSql(p.fullDescription)},

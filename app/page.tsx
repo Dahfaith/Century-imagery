@@ -9,9 +9,24 @@ import { AboutPreview } from "@/components/AboutPreview";
 import { JournalPreview } from "@/components/JournalPreview";
 import { BookingCTA } from "@/components/BookingCTA";
 import { Footer } from "@/components/Footer";
-import { getProjects, getServices, getJournalPosts } from "@/lib/api";
+import { getProjects, getServices, getJournalPosts, getPageBySlug } from "@/lib/api";
+import type { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("home");
+  if (!page) return {};
+  return {
+    title: page.seo_title || undefined,
+    description: page.seo_description || undefined,
+    openGraph: {
+      title: page.seo_title || undefined,
+      description: page.seo_description || undefined,
+      images: page.seo_image_url ? [{ url: page.seo_image_url }] : undefined,
+    },
+  };
+}
 
 export default async function Home() {
   const projects = await getProjects(4);

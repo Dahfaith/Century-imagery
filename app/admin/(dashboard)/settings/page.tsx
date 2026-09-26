@@ -9,6 +9,7 @@ export default async function SettingsPage() {
   const supabase = await createClient()
 
   const { data: settings } = await (supabase.from('site_settings') as any).select('*').single()
+  const { data: media } = await supabase.from('media').select('id, filename, provider_url').order('created_at', { ascending: false })
 
   return (
     <div className="space-y-6">
@@ -16,7 +17,7 @@ export default async function SettingsPage() {
         <h1 className="text-2xl font-display font-medium text-brand-cream">Site Settings</h1>
         <p className="text-brand-muted mt-1 text-sm">Manage global site identity, SEO defaults, and contact details.</p>
       </div>
-      <SiteSettingsForm initialData={settings || {}} />
+      <SiteSettingsForm initialData={settings || {}} media={media || []} />
     </div>
   )
 }

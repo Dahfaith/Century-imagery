@@ -3,21 +3,23 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WorkPortfolioGrid } from "@/components/WorkPortfolioGrid";
-import { getProjects } from "@/lib/api";
+import { getProjects, getPageBySlug } from "@/lib/api";
 import { Sparkles, Film } from "lucide-react";
 
 export const dynamic = 'force-dynamic' // or revalidate = 60
 
-export const metadata: Metadata = {
-  title: "Selected Work & Filmography | Century Imagery LLC",
-  description:
-    "Explore commercial campaign films, fashion editorials, music visualizers, and documentaries directed and produced by Century Imagery LLC.",
-  openGraph: {
-    title: "Selected Work | Century Imagery LLC",
-    description:
-      "A curated archive of commercial, fashion, music, and documentary films directed by Century Imagery LLC.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("work");
+  return {
+    title: page?.seo_title || "Selected Work & Filmography | Century Imagery LLC",
+    description: page?.seo_description || "Explore commercial campaign films, fashion editorials, music visualizers, and documentaries directed and produced by Century Imagery LLC.",
+    openGraph: {
+      title: page?.seo_title || "Selected Work | Century Imagery LLC",
+      description: page?.seo_description || "A curated archive of commercial, fashion, music, and documentary films directed by Century Imagery LLC.",
+      images: page?.seo_image_url ? [{ url: page.seo_image_url }] : undefined,
+    },
+  };
+}
 
 export default async function WorkPage() {
   const projects = await getProjects()

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { getServices } from "@/lib/api";
+import { getServices, getPageBySlug } from "@/lib/api";
 import {
   Film,
   CheckCircle2,
@@ -17,16 +17,18 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: "Services & Studio Disciplines | Century Imagery LLC",
-  description:
-    "Explore the 7 motion picture and creative production divisions of Century Imagery LLC, including Film & Cinema, Commercials, Luxury Event Cinema, and The Century Post Lab.",
-  openGraph: {
-    title: "Services & Production Disciplines | Century Imagery LLC",
-    description:
-      "A complete guide to Century Imagery LLC's cinematic production capabilities, optical packages, and post-production lab.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("services");
+  return {
+    title: page?.seo_title || "Services & Studio Disciplines | Century Imagery LLC",
+    description: page?.seo_description || "Explore the 7 motion picture and creative production divisions of Century Imagery LLC, including Film & Cinema, Commercials, Luxury Event Cinema, and The Century Post Lab.",
+    openGraph: {
+      title: page?.seo_title || "Services & Production Disciplines | Century Imagery LLC",
+      description: page?.seo_description || "A complete guide to Century Imagery LLC's cinematic production capabilities, optical packages, and post-production lab.",
+      images: page?.seo_image_url ? [{ url: page.seo_image_url }] : undefined,
+    },
+  };
+}
 
 export default async function ServicesPage() {
   const services = await getServices();
