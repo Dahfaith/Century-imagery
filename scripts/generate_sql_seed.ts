@@ -11,9 +11,11 @@ function escapeSql(str: string | null | undefined): string {
 
 let sql = `-- Full Data Seed from Original Static Files\n\n`;
 
-// Fix schema limitation for year
+// Fix schema limitation for year and missing columns
 sql += `-- SCHEMA FIXES\n`;
-sql += `ALTER TABLE projects ALTER COLUMN year TYPE text USING year::text;\n\n`;
+sql += `ALTER TABLE projects ALTER COLUMN year TYPE text USING year::text;\n`;
+sql += `ALTER TABLE projects ADD COLUMN IF NOT EXISTS credits JSONB DEFAULT '[]'::jsonb;\n`;
+sql += `ALTER TABLE projects ADD COLUMN IF NOT EXISTS services JSONB DEFAULT '[]'::jsonb;\n\n`;
 
 // 1. SERVICES
 sql += `-- SERVICES\n`;
