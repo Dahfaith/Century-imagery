@@ -19,6 +19,7 @@ export const viewport: Viewport = {
 import { getSiteSettings } from "@/lib/api";
 import { Toaster } from "react-hot-toast";
 import NextTopLoader from 'nextjs-toploader';
+import { Analytics } from "@vercel/analytics/next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -92,6 +93,7 @@ export default function RootLayout({
           }} 
         />
         {children}
+        <Analytics />
       </body>
     </html>
   );
