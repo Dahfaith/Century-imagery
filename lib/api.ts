@@ -138,11 +138,53 @@ export const getPageBySlug = cache(async (slug: string): Promise<PublicPage | nu
     .eq('slug', slug)
     .single() as any
   if (error || !data) return null
+
+  const content = (data.content as Record<string, any>) || {}
+
+  // Gather any media IDs referenced in content
+  const mediaIds: string[] = []
+  Object.values(content).forEach((section: any) => {
+    if (typeof section === 'object' && section !== null) {
+      Object.entries(section).forEach(([k, v]) => {
+        if ((k.endsWith('_media_id') || k === 'media_id') && typeof v === 'string' && v) {
+          mediaIds.push(v)
+        }
+      })
+    }
+  })
+
+  // If media IDs are present, fetch their URLs from media table
+  if (mediaIds.length > 0) {
+    const { data: mediaRows } = await (supabase.from('media') as any)
+      .select('id, filename, provider_url, thumbnail_url, playback_url, media_type')
+      .in('id', mediaIds)
+
+    if (mediaRows && mediaRows.length > 0) {
+      const mediaMap = new Map<string, any>()
+      mediaRows.forEach((m: any) => mediaMap.set(m.id, m))
+
+      // Attach resolved URLs to content sections
+      Object.keys(content).forEach((secKey) => {
+        const section = content[secKey]
+        if (typeof section === 'object' && section !== null) {
+          Object.keys(section).forEach((k) => {
+            if ((k.endsWith('_media_id') || k === 'media_id') && mediaMap.has(section[k])) {
+              const m = mediaMap.get(section[k])
+              const urlKey = k.replace('_media_id', '_url').replace('media_id', 'media_url')
+              section[urlKey] = m.provider_url || m.thumbnail_url || m.playback_url
+              section[k.replace('_media_id', '_media')] = m
+            }
+          })
+        }
+      })
+    }
+  }
+
   return {
     slug: data.slug,
     title: data.title,
     status: data.status || 'draft',
-    content: (data.content as Record<string, any>) || {},
+    content,
     seo_title: data.seo_title || undefined,
     seo_description: data.seo_description || undefined,
     seo_image_url: data.seo_image_url || undefined,

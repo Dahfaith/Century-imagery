@@ -88,7 +88,7 @@ export default async function AboutPage() {
               muted
               playsInline
               preload="metadata"
-              poster="/brand/hero-mockup-gold.png"
+              poster={content?.bio?.image_url || "/brand/hero-mockup-gold.png"}
               className="w-full h-full object-cover"
             >
               <source src="/videos/hero.MP4" />
@@ -150,25 +150,44 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
-            <div className="lg:col-span-8 space-y-6 text-base sm:text-lg text-brand-cream/90 font-sans font-normal leading-relaxed">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+            {/* Founder Portrait (from CMS Founder Image) */}
+            <div className="lg:col-span-5 relative aspect-[3/4] sm:aspect-[4/5] rounded-2xl overflow-hidden border border-brand-gold/40 bg-brand-surface shadow-2xl group">
+              <img
+                src={content?.bio?.image_url || '/brand/hero-mockup-gold.png'}
+                alt="Akin Idowu - Founder & Executive Creative Director"
+                className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
+              <div className="absolute bottom-4 left-4 right-4 z-10">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-gold block font-semibold">
+                  FOUNDER &bull; EXECUTIVE CREATIVE DIRECTOR
+                </span>
+                <span className="text-base sm:text-lg font-display font-bold text-brand-cream uppercase">
+                  Akin Idowu
+                </span>
+              </div>
+            </div>
+
+            {/* Founder Bio & Quotes */}
+            <div className="lg:col-span-7 space-y-6 text-base sm:text-lg text-brand-cream/90 font-sans font-normal leading-relaxed">
               <blockquote className="border-l-2 border-brand-gold pl-6 italic text-brand-cream text-lg sm:text-2xl font-display font-bold leading-snug">
                 &ldquo;A camera is merely an instrument; the real work of cinema happens in the mind of the director. We ask the difficult questions: Why this angle? What does the darkness in the corner convey? We do not simply record events—we direct cinema.&rdquo;
               </blockquote>
               <p className="text-sm sm:text-base text-brand-muted pt-2">
                 Under Akin Idowu’s creative direction, Century Imagery has established itself as a trusted media partner for high-level state governance, high-society weddings, and premier nightlife brands across Nigeria and the diaspora.
               </p>
-            </div>
 
-            <div className="lg:col-span-4 p-6 rounded-xl border border-brand-border/50 bg-brand-surface/60 space-y-3 font-mono text-xs text-brand-muted">
-              <div className="text-brand-gold font-semibold uppercase tracking-wider">
-                STUDIO HEADQUARTERS
-              </div>
-              <div className="text-brand-cream leading-relaxed">
-                No 6 Zone A, Road 3, Olonde, Ologuneru, Ibadan, Oyo State, Nigeria
-              </div>
-              <div className="pt-2 border-t border-brand-border/30 text-zinc-400">
-                Lagos Deployments &bull; Worldwide Transit
+              <div className="p-6 rounded-xl border border-brand-border/50 bg-brand-surface/60 space-y-3 font-mono text-xs text-brand-muted">
+                <div className="text-brand-gold font-semibold uppercase tracking-wider">
+                  STUDIO HEADQUARTERS
+                </div>
+                <div className="text-brand-cream leading-relaxed">
+                  No 6 Zone A, Road 3, Olonde, Ologuneru, Ibadan, Oyo State, Nigeria
+                </div>
+                <div className="pt-2 border-t border-brand-border/30 text-zinc-400">
+                  Lagos Deployments &bull; Worldwide Transit
+                </div>
               </div>
             </div>
           </div>
