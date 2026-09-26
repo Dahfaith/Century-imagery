@@ -4,6 +4,7 @@
 ALTER TABLE projects ALTER COLUMN year TYPE text USING year::text;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS credits JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS services JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE journal_posts ADD COLUMN IF NOT EXISTS category TEXT;
 
 -- SERVICES
 
