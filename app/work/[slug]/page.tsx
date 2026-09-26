@@ -22,8 +22,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-// Dynamic rendering — CMS content changes frequently; no static pre-generation needed
-export const dynamic = 'force-dynamic'
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;

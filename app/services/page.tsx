@@ -16,7 +16,7 @@ import {
   Layers,
 } from "lucide-react";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("services");

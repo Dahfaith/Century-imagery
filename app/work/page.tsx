@@ -6,7 +6,7 @@ import { WorkPortfolioGrid } from "@/components/WorkPortfolioGrid";
 import { getProjects, getPageBySlug } from "@/lib/api";
 import { Sparkles, Film } from "lucide-react";
 
-export const dynamic = 'force-dynamic' // or revalidate = 60
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("work");
