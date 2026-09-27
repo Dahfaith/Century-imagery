@@ -249,7 +249,9 @@ function mapProject(dbProject: any): PublicProject {
     if (coverMedia.media_type === 'image') {
       heroImage = getMediaUrl(coverMedia)
     } else {
-      heroImage = coverMedia.thumbnail_url || getMediaUrl(coverMedia)
+      // If user uploaded a video into the Cover Media (Primary Poster) field, we cannot use the .MP4 URL as a CSS background!
+      // We must fallback to the canonical image (if thumbnail isn't explicitly provided) to prevent a blank dark box.
+      heroImage = coverMedia.thumbnail_url || canonical?.heroImage || '/brand/hero-mockup-gold.png'
     }
   }
 
@@ -379,7 +381,7 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
     if (coverMedia) {
       if (coverMedia.media_type === 'video') {
         videoUrl = getVideoUrl(coverMedia)
-        imagePlaceholder = coverMedia.thumbnail_url || canonical?.imagePlaceholder || getMediaUrl(coverMedia)
+        imagePlaceholder = coverMedia.thumbnail_url || canonical?.imagePlaceholder || '/brand/hero-mockup-gold.png'
       } else {
         // User assigned an image: show image, DO NOT play a video over it!
         imagePlaceholder = getMediaUrl(coverMedia)
@@ -441,7 +443,7 @@ function mapJournalArticle(dbPost: any): PublicJournalArticle {
     readTime: `${readMins} min read`,
     excerpt: dbPost.excerpt || '',
     content: contentStrings,
-    coverImage: getMediaUrl(coverMedia),
+    coverImage: (coverMedia && coverMedia.media_type === 'video') ? (coverMedia.thumbnail_url || '/brand/hero-mockup-gold.png') : getMediaUrl(coverMedia),
     author: dbPost.author_name || 'Century Imagery',
     featured: dbPost.featured || false,
     pullQuote: dbPost.pull_quote || undefined,
