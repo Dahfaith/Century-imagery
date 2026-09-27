@@ -32,7 +32,7 @@ export const services: ServiceDivision[] = [
       "Product Commercials",
     ],
     imagePlaceholder: "/brand/hero-mockup-gold.png",
-    videoUrl: "/services/commercial-brand.MOV",
+    videoUrl: "/services/commercial-brand.mp4",
   },
   {
     id: "luxury-event-cinema",
@@ -82,7 +82,7 @@ export const services: ServiceDivision[] = [
       "Studio & Location Lighting Setup",
     ],
     imagePlaceholder: "/brand/hero-mockup-gold.png",
-    videoUrl: "/services/aerial-specialized.MOV",
+    videoUrl: "/services/aerial-specialized.mp4",
   },
   {
     id: "photography-division",
@@ -97,7 +97,7 @@ export const services: ServiceDivision[] = [
       "Fashion & Lifestyle Shoots",
     ],
     imagePlaceholder: "/services/photography.jpg",
-    videoUrl: "/services/photography.MOV",
+    videoUrl: "/services/photography.mp4",
   },
   {
     id: "production-support",

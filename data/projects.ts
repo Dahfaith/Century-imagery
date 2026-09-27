@@ -48,7 +48,7 @@ export const projects: Project[] = [
     story:
       "Deploying multi-cam live broadcast rigs, aerial drone sweeps across the Government House and Remembrance Arcade, and archival-grade sound engineering to record one of the state's most solemn civic traditions.",
     heroImage: "/brand/hero-mockup-gold.png",
-    heroVideo: "/projects/armed-forces.MP4",
+    heroVideo: "/projects/armed-forces.mp4",
     gallery: [
       "/services/post-lab.jpg",
       "/services/production-support.jpg",
@@ -82,7 +82,7 @@ export const projects: Project[] = [
     story:
       "Filmed during headline tour stops and stadium festivals, our unit went stage-front and backstage to capture the adrenaline, euphoria, and cultural gravity of the global Afrobeats explosion.",
     heroImage: "/brand/hero-mockup-gold.png",
-    heroVideo: "/projects/dj-tunez.MP4",
+    heroVideo: "/projects/dj-tunez.mp4",
     gallery: [
       "/services/film-cinema.jpg",
       "/services/photography.jpg",
@@ -149,7 +149,7 @@ export const projects: Project[] = [
     story:
       "Working under strict non-disclosure agreements, our team brings cinema-grade prime lenses and whisper-quiet set protocol to record legacy stories for posterity and family archives.",
     heroImage: "/brand/hero-mockup-gold.png",
-    heroVideo: "/projects/public-figures.MP4",
+    heroVideo: "/projects/public-figures.mp4",
     gallery: [
       "/services/photography.jpg",
       "/services/film-cinema.jpg",
@@ -182,7 +182,7 @@ export const projects: Project[] = [
     story:
       "From traditional bridal rites rich in Yoruba textile heritage to grand black-tie evening galas, we capture emotion with subtle discretion and cinematic scale.",
     heroImage: "/brand/hero-mockup-gold.png",
-    heroVideo: "/projects/wedding-cinema.MP4",
+    heroVideo: "/projects/wedding-cinema.mp4",
     gallery: [
       "/services/luxury-event.jpg",
       "/services/photography.jpg",

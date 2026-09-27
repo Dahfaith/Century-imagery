@@ -106,17 +106,17 @@ function getVideoUrl(mediaRecord: any): string | undefined {
 
 // Built-in cinematic video fallbacks ensuring videos match localhost defaults
 const LEGACY_PROJECT_VIDEOS: Record<string, string> = {
-  'oyo-state-armed-forces-remembrance': '/projects/armed-forces.MP4',
-  'dj-tunez-live-experiences': '/projects/dj-tunez.MP4',
+  'oyo-state-armed-forces-remembrance': '/projects/armed-forces.mp4',
+  'dj-tunez-live-experiences': '/projects/dj-tunez.mp4',
   'utiva-future-of-tech': '/projects/utiva.MP4',
-  'iconic-legacies-public-figures': '/projects/public-figures.MP4',
-  'century-legacy-wedding-cinema': '/projects/wedding-cinema.MP4',
+  'iconic-legacies-public-figures': '/projects/public-figures.mp4',
+  'century-legacy-wedding-cinema': '/projects/wedding-cinema.mp4',
 }
 
 const LEGACY_SERVICE_VIDEOS: Record<string, string> = {
-  'commercial-brand-production': '/services/commercial-brand.MOV',
-  'aerial-specialized': '/services/aerial-specialized.MOV',
-  'photography-division': '/services/photography.MOV',
+  'commercial-brand-production': '/services/commercial-brand.mp4',
+  'aerial-specialized': '/services/aerial-specialized.mp4',
+  'photography-division': '/services/photography.mp4',
 }
 
 // ─── SITE SETTINGS ───────────────────────────────────────────────────────────
@@ -268,6 +268,8 @@ function mapProject(dbProject: any): PublicProject {
       heroVideo = getVideoUrl(heroMedia)
     } else if (coverMedia && coverMedia.media_type === 'video') {
       heroVideo = getVideoUrl(coverMedia)
+    } else if ((heroMedia && heroMedia.media_type === 'image') || (coverMedia && coverMedia.media_type === 'image')) {
+      heroVideo = undefined
     } else {
       heroVideo = LEGACY_PROJECT_VIDEOS[dbProject.slug] || canonical?.heroVideo || undefined
     }
