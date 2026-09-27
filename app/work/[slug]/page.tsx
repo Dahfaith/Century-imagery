@@ -127,7 +127,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             <div
               className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
               style={{
-                backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
+                backgroundImage: `url('${project.heroImage}'), url('/brand/hero-mockup-gold.png')`,
               }}
             />
             {/* Cinematic Vignette */}
@@ -230,7 +230,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               >
                 <div
                   className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-                  style={{ backgroundImage: `url(${imgUrl})` }}
+                  style={{ backgroundImage: `url('${imgUrl}')` }}
                 />
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-300" />
               </div>

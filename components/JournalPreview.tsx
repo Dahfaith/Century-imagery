@@ -45,7 +45,7 @@ export function JournalPreview({ articles }: { articles: PublicJournalArticle[] 
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-brand-surface">
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                    style={{ backgroundImage: `url(${articles[0].coverImage})` }}
+                    style={{ backgroundImage: `url('${articles[0].coverImage}')` }}
                   />
                   <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors duration-300" />
                   <div className="absolute top-4 left-4 z-10">

@@ -63,7 +63,7 @@ export function CloudflareStreamPlayer({
       return (
         <div
           className={`w-full h-full bg-cover bg-center ${className}`}
-          style={{ backgroundImage: `url(${fallbackPoster})` }}
+          style={{ backgroundImage: `url('${fallbackPoster}')` }}
         />
       );
     }
@@ -113,7 +113,7 @@ export function CloudflareStreamPlayer({
         {(!isYouTubeOrVimeo || (!isPlaying && poster)) && (
           <div
             className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out ${isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-            style={{ backgroundImage: `url(${fallbackPoster})` }}
+            style={{ backgroundImage: `url('${fallbackPoster}')` }}
             aria-hidden="true"
           />
         )}
@@ -140,7 +140,7 @@ export function CloudflareStreamPlayer({
       ) : (
         <div
           className="w-full h-full bg-cover bg-center"
-          style={{ backgroundImage: `url(${poster || "/brand/hero-mockup-gold.png"})` }}
+          style={{ backgroundImage: `url('${poster || "/brand/hero-mockup-gold.png"}')` }}
         />
       )}
     </div>

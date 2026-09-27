@@ -101,7 +101,7 @@ export default async function ServicesPage() {
                 <div
                   className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
                   style={{
-                    backgroundImage: `url(${service.imagePlaceholder}), url('/brand/hero-mockup-gold.png')`,
+                    backgroundImage: `url('${service.imagePlaceholder}'), url('/brand/hero-mockup-gold.png')`,
                   }}
                 />
                 {service.videoUrl && (

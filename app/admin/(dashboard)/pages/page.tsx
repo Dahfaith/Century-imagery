@@ -28,7 +28,7 @@ export default async function PagesPage() {
       <PageListActions pagesCount={pages?.length || 0} />
 
       {pages && pages.length > 0 && (
-        <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden shadow-2xl mt-6">
+        <div className="bg-brand-surface border border-brand-border rounded-xl overflow-x-auto shadow-2xl mt-6">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-brand-surface-card border-b border-brand-border">

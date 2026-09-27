@@ -125,7 +125,7 @@ export default async function JournalArticlePage({ params }: PageProps) {
         <div className="relative aspect-[16/9] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-brand-border bg-brand-surface shadow-2xl">
           <div
             className="w-full h-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${article.coverImage})` }}
+            style={{ backgroundImage: `url('${article.coverImage}')` }}
           />
           <div className="absolute inset-0 bg-black/25 pointer-events-none" />
         </div>

@@ -39,7 +39,7 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 style={{
-                  backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
+                  backgroundImage: `url('${project.heroImage}'), url('/brand/hero-mockup-gold.png')`,
                 }}
               />
             )}
@@ -111,7 +111,7 @@ export function ProjectCard({ project, layout = "standard", index = 0 }: Project
             <div
               className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               style={{
-                backgroundImage: `url(${project.heroImage}), url('/brand/hero-mockup-gold.png')`,
+                backgroundImage: `url('${project.heroImage}'), url('/brand/hero-mockup-gold.png')`,
               }}
             />
           )}

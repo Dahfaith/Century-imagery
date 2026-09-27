@@ -65,7 +65,7 @@ export function VideoBackground({
           isPlaying ? "opacity-0" : "opacity-100"
         )}
         style={{
-          backgroundImage: `url(${posterUrl})`,
+          backgroundImage: `url('${posterUrl}')`,
           backgroundPosition: "center center",
         }}
         aria-hidden="true"

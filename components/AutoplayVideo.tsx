@@ -142,7 +142,7 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
           isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
         style={{
-          backgroundImage: `url(${fallbackPoster}), url('/brand/hero-mockup-gold.png')`,
+          backgroundImage: `url('${fallbackPoster}'), url('/brand/hero-mockup-gold.png')`,
         }}
         aria-hidden="true"
       />

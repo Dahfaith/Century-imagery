@@ -88,7 +88,7 @@ export function JournalArchiveGrid({ initialArticles }: JournalArchiveGridProps)
                 <div className="lg:col-span-8 relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-brand-surface">
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                    style={{ backgroundImage: `url(${filteredArticles[0].coverImage})` }}
+                    style={{ backgroundImage: `url('${filteredArticles[0].coverImage}')` }}
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
                   <div className="absolute top-4 left-4 z-10">
@@ -143,7 +143,7 @@ export function JournalArchiveGrid({ initialArticles }: JournalArchiveGridProps)
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-brand-surface">
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                      style={{ backgroundImage: `url(${article.coverImage})` }}
+                      style={{ backgroundImage: `url('${article.coverImage}')` }}
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-300" />
                     <div className="absolute top-4 left-4 z-10">
