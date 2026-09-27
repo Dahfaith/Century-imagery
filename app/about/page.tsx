@@ -111,7 +111,7 @@ export default async function AboutPage() {
                 poster="/brand/hero-mockup-gold.png"
                 className="w-full h-full object-cover"
               >
-                <source src="/videos/hero.MP4" />
+                <source src="/videos/hero.mp4" />
               </video>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/90 via-transparent to-transparent opacity-70 pointer-events-none" />

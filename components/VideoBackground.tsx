@@ -13,7 +13,7 @@ interface VideoBackgroundProps {
 }
 
 export function VideoBackground({
-  desktopVideoUrl = "/videos/hero.MP4",
+  desktopVideoUrl = "/videos/hero.mp4",
   mobileVideoUrl,
   posterUrl = "/brand/hero-mockup-gold.png",
   overlayOpacity = "bg-black/35",

@@ -89,10 +89,16 @@ export interface SiteSettings {
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
+function fixExtension(url: string | null | undefined): string | undefined {
+  if (!url) return undefined
+  // Vercel is case-sensitive, fix seeded legacy .MP4 / .MOV paths to lowercase .mp4
+  return url.replace(/\.MP4$/i, '.mp4').replace(/\.MOV$/i, '.mp4')
+}
+
 function getMediaUrl(mediaRecord: any): string {
   if (!mediaRecord) return '/brand/hero-mockup-gold.png'
-  // Prefer Cloudflare R2 public URL or Cloudflare Stream thumbnail
-  return mediaRecord.provider_url || mediaRecord.thumbnail_url || mediaRecord.playback_url || '/brand/hero-mockup-gold.png'
+  const url = mediaRecord.provider_url || mediaRecord.thumbnail_url || mediaRecord.playback_url || '/brand/hero-mockup-gold.png'
+  return fixExtension(url) || '/brand/hero-mockup-gold.png'
 }
 
 function getVideoUrl(mediaRecord: any): string | undefined {
@@ -101,14 +107,14 @@ function getVideoUrl(mediaRecord: any): string | undefined {
   const url = mediaRecord.playback_url || mediaRecord.provider_url
   if (!url) return undefined
   if (/\.(jpg|jpeg|png|webp|svg|gif)$/i.test(url)) return undefined
-  return url
+  return fixExtension(url)
 }
 
 // Built-in cinematic video fallbacks ensuring videos match localhost defaults
 const LEGACY_PROJECT_VIDEOS: Record<string, string> = {
   'oyo-state-armed-forces-remembrance': '/projects/armed-forces.mp4',
   'dj-tunez-live-experiences': '/projects/dj-tunez.mp4',
-  'utiva-future-of-tech': '/projects/utiva.MP4',
+  'utiva-future-of-tech': '/projects/utiva.mp4',
   'iconic-legacies-public-figures': '/projects/public-figures.mp4',
   'century-legacy-wedding-cinema': '/projects/wedding-cinema.mp4',
 }

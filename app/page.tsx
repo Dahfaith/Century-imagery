@@ -32,13 +32,16 @@ export default async function Home() {
   const projects = await getProjects(4);
   const services = await getServices();
   const articles = await getJournalPosts(3);
+  const page = await getPageBySlug("home");
+  const heroVideoUrl = page?.content?.hero?.video_media_url;
+
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">
       {/* Global Navigation */}
       <Navbar />
 
       {/* Section 1: Cinematic Full-Screen Hero */}
-      <Hero />
+      <Hero videoUrl={heroVideoUrl} />
 
       {/* Section 2: Editorial Brand Statement */}
       <BrandStatement />

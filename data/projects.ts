@@ -116,7 +116,7 @@ export const projects: Project[] = [
     story:
       "Working closely with Utiva’s brand leaders, Century Imagery translated educational metrics and tech innovation into an emotional, human-driven visual story that inspires global enterprise partnerships.",
     heroImage: "/brand/hero-mockup-gold.png",
-    heroVideo: "/projects/utiva.MP4",
+    heroVideo: "/projects/utiva.mp4",
     gallery: [
       "/services/post-lab.jpg",
       "/services/production-support.jpg",

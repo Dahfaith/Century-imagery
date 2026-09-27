@@ -8,9 +8,10 @@ import { VideoBackground } from "./VideoBackground";
 
 interface HeroProps {
   onScrollClick?: () => void;
+  videoUrl?: string;
 }
 
-export function Hero({ onScrollClick }: HeroProps) {
+export function Hero({ onScrollClick, videoUrl }: HeroProps) {
   const handleScrollClick = () => {
     if (onScrollClick) {
       onScrollClick();
@@ -29,7 +30,7 @@ export function Hero({ onScrollClick }: HeroProps) {
       {/* Background Cinematic Video + Fallback Poster */}
       <VideoBackground
         posterUrl="/brand/hero-mockup-gold.png"
-        desktopVideoUrl="/videos/hero.MP4"
+        desktopVideoUrl={videoUrl || "/videos/hero.mp4"}
         overlayOpacity="bg-black/35"
       />
 

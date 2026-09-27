@@ -10,7 +10,7 @@ interface ShowreelProps {
 }
 
 export function Showreel({
-  reelVideoUrl = "/videos/showreel.MOV",
+  reelVideoUrl = "/videos/showreel.mp4",
   posterImage = "/brand/hero-mockup-gold.png",
 }: ShowreelProps) {
   return (
