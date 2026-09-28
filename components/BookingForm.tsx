@@ -387,7 +387,7 @@ export function BookingForm() {
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="e.g. Tunde Adeyemi"
-                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors ${
+                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream text-base sm:text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors ${
                       errors.fullName
                         ? "border-red-500/80 form-error-marker"
                         : "border-brand-border hover:border-brand-border/90"
@@ -416,7 +416,7 @@ export function BookingForm() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="e.g. tunde@productioncompany.com"
-                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors ${
+                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream text-base sm:text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors ${
                       errors.email
                         ? "border-red-500/80 form-error-marker"
                         : "border-brand-border hover:border-brand-border/90"
@@ -445,7 +445,7 @@ export function BookingForm() {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="08190041071 / +234 819 004 1071"
-                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors ${
+                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream text-base sm:text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors ${
                       errors.phone
                         ? "border-red-500/80 form-error-marker"
                         : "border-brand-border hover:border-brand-border/90"
@@ -474,7 +474,7 @@ export function BookingForm() {
                     value={formData.company}
                     onChange={handleChange}
                     placeholder="e.g. Sony Music / Heineken / Independent"
-                    className="w-full px-4 py-3.5 rounded-xl border border-brand-border hover:border-brand-border/90 bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors"
+                    className="w-full px-4 py-3.5 rounded-xl border border-brand-border hover:border-brand-border/90 bg-brand-black/60 text-brand-cream text-base sm:text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors"
                   />
                 </div>
               </div>
@@ -506,7 +506,7 @@ export function BookingForm() {
                       name="discipline"
                       value={formData.discipline}
                       onChange={handleChange}
-                      className="w-full pl-4 pr-10 py-3.5 rounded-xl border border-brand-border bg-brand-black/60 text-brand-cream text-xs sm:text-sm font-sans focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors appearance-none cursor-pointer truncate"
+                      className="w-full pl-4 pr-10 py-3.5 rounded-xl border border-brand-border bg-brand-black/60 text-brand-cream text-base sm:text-sm font-sans focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors appearance-none cursor-pointer truncate"
                     >
                       {disciplineOptions.map((opt) => (
                         <option key={opt} value={opt} className="bg-brand-surface text-brand-cream py-1">
@@ -535,7 +535,7 @@ export function BookingForm() {
                     value={formData.timeline}
                     onChange={handleChange}
                     placeholder="e.g. October 2026 / Immediate"
-                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors text-xs sm:text-sm font-sans ${
+                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors text-base sm:text-sm font-sans ${
                       errors.timeline
                         ? "border-red-500/80 form-error-marker"
                         : "border-brand-border hover:border-brand-border/90"
@@ -564,7 +564,7 @@ export function BookingForm() {
                     value={formData.location}
                     onChange={handleChange}
                     placeholder="e.g. Lagos, Nigeria / Atlanta, USA / Worldwide"
-                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors text-xs sm:text-sm font-sans ${
+                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors text-base sm:text-sm font-sans ${
                       errors.location
                         ? "border-red-500/80 form-error-marker"
                         : "border-brand-border hover:border-brand-border/90"
@@ -592,7 +592,7 @@ export function BookingForm() {
                       name="budget"
                       value={formData.budget}
                       onChange={handleChange}
-                      className="w-full pl-4 pr-10 py-3.5 rounded-xl border border-brand-border bg-brand-black/60 text-brand-cream text-xs sm:text-sm font-sans focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors appearance-none cursor-pointer truncate"
+                      className="w-full pl-4 pr-10 py-3.5 rounded-xl border border-brand-border bg-brand-black/60 text-brand-cream text-base sm:text-sm font-sans focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors appearance-none cursor-pointer truncate"
                     >
                       {budgetOptions.map((opt) => (
                         <option key={opt} value={opt} className="bg-brand-surface text-brand-cream py-1">
@@ -621,7 +621,7 @@ export function BookingForm() {
                     value={formData.projectBrief}
                     onChange={handleChange}
                     placeholder="Outline your creative vision, narrative concept, key deliverables (e.g. 60s broadcast + 9:16 cutdowns), visual tone, references (Vimeo/YouTube links), and special technical demands (drone, high-speed, DaVinci Resolve color grade)..."
-                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors resize-y text-xs sm:text-sm leading-relaxed font-sans ${
+                    className={`w-full px-4 py-3.5 rounded-xl border bg-brand-black/60 text-brand-cream placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors resize-y text-base sm:text-sm leading-relaxed font-sans ${
                       errors.projectBrief
                         ? "border-red-500/80 form-error-marker"
                         : "border-brand-border hover:border-brand-border/90"
@@ -649,7 +649,7 @@ export function BookingForm() {
                       name="referralSource"
                       value={formData.referralSource}
                       onChange={handleChange}
-                      className="w-full pl-4 pr-10 py-3.5 rounded-xl border border-brand-border bg-brand-black/60 text-brand-cream text-xs sm:text-sm font-sans focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors appearance-none cursor-pointer truncate"
+                      className="w-full pl-4 pr-10 py-3.5 rounded-xl border border-brand-border bg-brand-black/60 text-brand-cream text-base sm:text-sm font-sans focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors appearance-none cursor-pointer truncate"
                     >
                       {referralOptions.map((opt) => (
                         <option key={opt} value={opt} className="bg-brand-surface text-brand-cream py-1">
