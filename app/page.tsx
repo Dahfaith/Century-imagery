@@ -29,10 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const projects = await getProjects(4);
-  const services = await getServices();
-  const articles = await getJournalPosts(3);
-  const page = await getPageBySlug("home");
+  const [projects, services, articles, page] = await Promise.all([
+    getProjects(4),
+    getServices(),
+    getJournalPosts(3),
+    getPageBySlug("home")
+  ]);
   const heroVideoUrl = page?.content?.hero?.video_media_url;
   const showreelVideoUrl = page?.content?.showreel?.video_media_url;
 
