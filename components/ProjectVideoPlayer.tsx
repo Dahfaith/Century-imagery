@@ -30,15 +30,15 @@ export function ProjectVideoPlayer({
       )}
     >
       {/* Cloudflare Stream / ReactPlayer Element */}
-      <div className={cn("absolute inset-0 w-full h-full", !isExternal && "pointer-events-none")}>
+      <div className="absolute inset-0 w-full h-full">
         <CloudflareStreamPlayer
           videoId={videoUrl}
           poster={posterImage}
-          autoplay={!isExternal}
-          loop={!isExternal}
-          muted={!isExternal}
-          controls={isExternal}
-          className={cn("absolute inset-0 w-full h-full object-cover", !isExternal && "scale-[1.02]")}
+          autoplay={false}
+          loop={false}
+          muted={false}
+          controls={true}
+          className="absolute inset-0 w-full h-full object-cover"
         />
       </div>
 
