@@ -93,6 +93,7 @@ export function CloudflareStreamPlayer({
         ) : (
           <video
             ref={videoRef}
+            poster={fallbackPoster}
             autoPlay={autoplay}
             muted={muted}
             loop={loop}
@@ -107,15 +108,6 @@ export function CloudflareStreamPlayer({
             {mp4Url && <source src={mp4Url} type="video/mp4" />}
             <source src={videoId} type={videoId.toLowerCase().endsWith(".mov") ? "video/quicktime" : "video/mp4"} />
           </video>
-        )}
-
-        {/* Fallback/Poster overlay - Stays visible until the video is actually playing! */}
-        {(!isYouTubeOrVimeo || (!isPlaying && poster)) && (
-          <div
-            className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out ${isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-            style={{ backgroundImage: `url('${fallbackPoster}')` }}
-            aria-hidden="true"
-          />
         )}
       </div>
     );

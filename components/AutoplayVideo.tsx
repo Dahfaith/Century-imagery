@@ -92,6 +92,7 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
           <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden scale-[1.05]">
             <Stream
               src={src}
+              poster={fallbackPoster}
               autoplay={isInView}
               muted={true}
               loop={true}
@@ -134,6 +135,7 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
         ) : (
           <video
             ref={videoRef}
+            poster={fallbackPoster}
             autoPlay
             loop
             muted
@@ -155,18 +157,6 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
           </video>
         )
       ) : null}
-      
-      {/* Fallback/Poster overlay - Stays visible until the video is actually playing to hide buffering black screens! */}
-      <div
-        className={cn(
-          "absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out",
-          isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
-        )}
-        style={{
-          backgroundImage: `url('${fallbackPoster}'), url('/brand/hero-mockup-gold.png')`,
-        }}
-        aria-hidden="true"
-      />
     </div>
   );
 }
