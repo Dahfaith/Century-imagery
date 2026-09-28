@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BookingForm } from "@/components/BookingForm";
+import { getSiteSettings } from "@/lib/api";
 import {
   MapPin,
   Mail,
@@ -40,7 +41,9 @@ const faqs = [
   },
 ];
 
-export default function BookingPage() {
+export default async function BookingPage() {
+  const settings = await getSiteSettings();
+  
   return (
     <div className="min-h-screen bg-brand-black text-brand-cream selection:bg-brand-gold selection:text-brand-black">
       <Navbar />
@@ -89,7 +92,7 @@ export default function BookingPage() {
                         Century Studio Headquarters
                       </h3>
                       <p className="text-xs text-brand-muted leading-relaxed mt-0.5">
-                        No 6 Zone A, Road 3, Olonde, Ologuneru, Ibadan, Oyo State, Nigeria
+                        {settings?.address || "No 6 Zone A, Road 3, Olonde, Ologuneru, Ibadan, Oyo State, Nigeria"}
                       </p>
                       <span className="text-[11px] font-mono text-zinc-500 block mt-1">
                         Lagos Deployments &bull; Worldwide Transit
@@ -98,49 +101,55 @@ export default function BookingPage() {
                   </div>
 
                   {/* Direct Producer Email */}
-                  <div className="flex items-start gap-3.5 pt-3 border-t border-brand-border/30">
-                    <Mail className="w-4 h-4 text-brand-gold shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-display font-semibold text-brand-cream text-sm">
-                        Executive Producing Desk
-                      </h3>
-                      <a
-                        href="mailto:Centuryimagery@gmail.com"
-                        className="text-xs text-brand-muted hover:text-brand-gold transition-colors font-mono block mt-0.5"
-                      >
-                        Centuryimagery@gmail.com
-                      </a>
+                  {settings?.email && (
+                    <div className="flex items-start gap-3.5 pt-3 border-t border-brand-border/30">
+                      <Mail className="w-4 h-4 text-brand-gold shrink-0 mt-1" />
+                      <div>
+                        <h3 className="font-display font-semibold text-brand-cream text-sm">
+                          Executive Producing Desk
+                        </h3>
+                        <a
+                          href={`mailto:${settings.email}`}
+                          className="text-xs text-brand-muted hover:text-brand-gold transition-colors font-mono block mt-0.5"
+                        >
+                          {settings.email}
+                        </a>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Phone & WhatsApp */}
-                  <div className="flex items-start gap-3.5 pt-3 border-t border-brand-border/30">
-                    <Phone className="w-4 h-4 text-brand-gold shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-display font-semibold text-brand-cream text-sm">
-                        Direct Line &bull; WhatsApp
-                      </h3>
-                      <a
-                        href="tel:+2348190041071"
-                        className="text-xs text-brand-muted hover:text-brand-gold transition-colors font-mono block mt-0.5"
-                      >
-                        08190041071 &bull; +234 819 004 1071
-                      </a>
+                  {(settings?.phone || settings?.whatsapp) && (
+                    <div className="flex items-start gap-3.5 pt-3 border-t border-brand-border/30">
+                      <Phone className="w-4 h-4 text-brand-gold shrink-0 mt-1" />
+                      <div>
+                        <h3 className="font-display font-semibold text-brand-cream text-sm">
+                          Direct Line &bull; WhatsApp
+                        </h3>
+                        <a
+                          href={`tel:${(settings.phone || settings.whatsapp || '').replace(/\D/g, '')}`}
+                          className="text-xs text-brand-muted hover:text-brand-gold transition-colors font-mono block mt-0.5"
+                        >
+                          {settings.phone || settings.whatsapp} {settings.whatsapp && settings.phone !== settings.whatsapp && `• ${settings.whatsapp}`}
+                        </a>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Direct WhatsApp Concierge Button */}
-                <div className="pt-2">
-                  <a
-                    href="https://wa.me/2348190041071?text=Hello%20Century%20Imagery%2C%20I%20would%20like%20to%20inquire%20about%20a%20film%20commission."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-brand-gold/40 bg-brand-gold/10 hover:bg-brand-gold hover:text-brand-black text-brand-gold font-display font-semibold text-xs uppercase tracking-[0.16em] transition-all duration-300"
-                  >
-                    <span>DIRECT WHATSAPP CONCIERGE</span>
-                  </a>
-                </div>
+                {settings?.whatsapp && (
+                  <div className="pt-2">
+                    <a
+                      href={`https://wa.me/${settings.whatsapp.replace(/\D/g, '')}?text=Hello%20Century%20Imagery%2C%20I%20would%20like%20to%20inquire%20about%20a%20film%20commission.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-brand-gold/40 bg-brand-gold/10 hover:bg-brand-gold hover:text-brand-black text-brand-gold font-display font-semibold text-xs uppercase tracking-[0.16em] transition-all duration-300"
+                    >
+                      <span>DIRECT WHATSAPP CONCIERGE</span>
+                    </a>
+                  </div>
+                )}
               </div>
 
               {/* Production Assurances */}
