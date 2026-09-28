@@ -55,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter(page => !['home', 'about', 'services', 'booking'].includes(page.slug))
     .map(page => ({
       url: `${baseUrl}/${page.slug}`,
-      lastModified: new Date(), // If we had updated_at we would use it here
+      lastModified: page.updated_at ? new Date(page.updated_at) : new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     }))
@@ -63,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Projects
   const projectRoutes = projects.map(project => ({
     url: `${baseUrl}/work/${project.slug}`,
-    lastModified: new Date(),
+    lastModified: project.updated_at ? new Date(project.updated_at) : new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.8,
   }))
@@ -71,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Journal Posts
   const journalRoutes = journalPosts.map(post => ({
     url: `${baseUrl}/journal/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: post.updated_at ? new Date(post.updated_at) : new Date(post.date),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }))

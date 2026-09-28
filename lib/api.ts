@@ -28,6 +28,7 @@ export interface PublicProject {
   services: string[] // from description or separate field
   credits: { role: string; name: string }[]
   featured: boolean
+  updated_at?: string
 }
 
 export interface PublicService {
@@ -55,6 +56,7 @@ export interface PublicJournalArticle {
   featured: boolean
   pullQuote?: string
   cameraSpecs?: string[]
+  updated_at?: string
 }
 
 export interface PublicPage {
@@ -65,6 +67,7 @@ export interface PublicPage {
   seo_title?: string
   seo_description?: string
   seo_image_url?: string
+  updated_at?: string
 }
 
 export interface SiteSettings {
@@ -216,7 +219,7 @@ export const getAllPages = cache(async (): Promise<PublicPage[]> => {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('pages')
-    .select('slug, title, status, content, seo_title, seo_description, seo_image_url')
+    .select('slug, title, status, content, seo_title, seo_description, seo_image_url, updated_at')
     .eq('status', 'published') as any
   if (error || !data) return []
   return (data as any[]).map((d: any) => ({
@@ -227,6 +230,7 @@ export const getAllPages = cache(async (): Promise<PublicPage[]> => {
     seo_title: d.seo_title || undefined,
     seo_description: d.seo_description || undefined,
     seo_image_url: d.seo_image_url || undefined,
+    updated_at: d.updated_at || undefined,
   }))
 })
 
@@ -319,6 +323,7 @@ function mapProject(dbProject: any): PublicProject {
     services,
     credits,
     featured: dbProject.featured ?? canonical?.featured ?? false,
+    updated_at: dbProject.updated_at || undefined,
   }
 }
 
@@ -474,6 +479,7 @@ function mapJournalArticle(dbPost: any): PublicJournalArticle {
     featured: dbPost.featured || false,
     pullQuote: dbPost.pull_quote || undefined,
     cameraSpecs: dbPost.camera_specs || undefined,
+    updated_at: dbPost.updated_at || dbPost.published_at || dbPost.created_at || undefined,
   }
 }
 
