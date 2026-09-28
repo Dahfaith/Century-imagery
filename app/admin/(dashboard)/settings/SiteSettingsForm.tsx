@@ -43,7 +43,7 @@ export function SiteSettingsForm({ initialData, media }: { initialData: any, med
     const payload = {
       ...form,
       budget_options: form.budget_options
-        ? form.budget_options.split('\n').map(s => s.trim()).filter(Boolean)
+        ? form.budget_options.split('\n').map((s: string) => s.trim()).filter(Boolean)
         : null
     }
 
