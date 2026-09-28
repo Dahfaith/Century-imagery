@@ -104,6 +104,9 @@ function getMediaUrl(mediaRecord: any): string {
 function getVideoUrl(mediaRecord: any): string | undefined {
   if (!mediaRecord) return undefined
   if (mediaRecord.media_type === 'image') return undefined
+  if (mediaRecord.provider === 'cloudflare_stream' && mediaRecord.provider_asset_id) {
+    return mediaRecord.provider_asset_id
+  }
   const url = mediaRecord.playback_url || mediaRecord.provider_url
   if (!url) return undefined
   if (/\.(jpg|jpeg|png|webp|svg|gif)$/i.test(url)) return undefined
@@ -162,7 +165,7 @@ export const getPageBySlug = cache(async (slug: string): Promise<PublicPage | nu
   // If media IDs are present, fetch their URLs from media table
   if (mediaIds.length > 0) {
     const { data: mediaRows } = await (supabase.from('media') as any)
-      .select('id, filename, provider_url, thumbnail_url, playback_url, media_type')
+      .select('id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type')
       .in('id', mediaIds)
 
     if (mediaRows && mediaRows.length > 0) {
@@ -177,7 +180,11 @@ export const getPageBySlug = cache(async (slug: string): Promise<PublicPage | nu
             if ((k.endsWith('_media_id') || k === 'media_id') && mediaMap.has(section[k])) {
               const m = mediaMap.get(section[k])
               const urlKey = k.replace('_media_id', '_url').replace('media_id', 'media_url')
-              section[urlKey] = m.provider_url || m.thumbnail_url || m.playback_url
+              if (m.provider === 'cloudflare_stream' && m.provider_asset_id) {
+                section[urlKey] = m.provider_asset_id
+              } else {
+                section[urlKey] = m.provider_url || m.thumbnail_url || m.playback_url
+              }
               section[k.replace('_media_id', '_media')] = m
             }
           })
@@ -257,7 +264,12 @@ function mapProject(dbProject: any): PublicProject {
     } else {
       // If user uploaded a video into the Cover Media (Primary Poster) field, we cannot use the .MP4 URL as a CSS background!
       // We must fallback to the canonical image (if thumbnail isn't explicitly provided) to prevent a blank dark box.
-      heroImage = coverMedia.thumbnail_url || canonical?.heroImage || '/brand/hero-mockup-gold.png'
+      const tUrl = coverMedia.thumbnail_url || canonical?.heroImage || '/brand/hero-mockup-gold.png'
+      if (/\.(mp4|webm|mov|m4v|mkv|m3u8)$/i.test(tUrl)) {
+        heroImage = canonical?.heroImage || '/brand/hero-mockup-gold.png'
+      } else {
+        heroImage = tUrl
+      }
     }
   }
 
@@ -308,9 +320,9 @@ export const getProjects = cache(async (limit?: number): Promise<PublicProject[]
     .from('projects')
     .select(`
       *,
-      cover_media:cover_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
-      hero_media:hero_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
-      project_media (sort_order, media:media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type))
+      cover_media:cover_media_id (id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type),
+      hero_media:hero_media_id (id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type),
+      project_media (sort_order, media:media_id (id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type))
     `)
     .eq('status', 'published')
     .order('sort_order', { ascending: true })
@@ -331,9 +343,9 @@ export const getProjectBySlug = cache(async (slug: string): Promise<PublicProjec
     .from('projects')
     .select(`
       *,
-      cover_media:cover_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
-      hero_media:hero_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
-      project_media (sort_order, media:media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type))
+      cover_media:cover_media_id (id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type),
+      hero_media:hero_media_id (id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type),
+      project_media (sort_order, media:media_id (id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type))
     `)
     .eq('slug', slug)
     .eq('status', 'published')
@@ -354,7 +366,7 @@ export const getServices = cache(async (): Promise<PublicService[]> => {
     .from('services')
     .select(`
       *,
-      cover_media:cover_media_id (id, filename, provider_url, thumbnail_url, playback_url, media_type),
+      cover_media:cover_media_id (id, filename, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type),
       service_items (id, title, description, sort_order)
     `)
     .eq('status', 'published')
@@ -463,7 +475,7 @@ export const getJournalPosts = cache(async (limit?: number): Promise<PublicJourn
     .from('journal_posts')
     .select(`
       *,
-      cover_media:cover_media_id (id, provider_url, thumbnail_url, playback_url, media_type)
+      cover_media:cover_media_id (id, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type)
     `)
     .eq('status', 'published')
     .order('published_at', { ascending: false, nullsFirst: false })
@@ -481,7 +493,7 @@ export const getJournalPostBySlug = cache(async (slug: string): Promise<PublicJo
     .from('journal_posts')
     .select(`
       *,
-      cover_media:cover_media_id (id, provider_url, thumbnail_url, playback_url, media_type)
+      cover_media:cover_media_id (id, provider, provider_asset_id, provider_url, thumbnail_url, playback_url, media_type)
     `)
     .eq('slug', slug)
     .eq('status', 'published')

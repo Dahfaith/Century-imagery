@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import ReactPlayer from "react-player";
+import { Stream } from "@cloudflare/stream-react";
 import { cn } from "@/lib/utils";
 
 interface AutoplayVideoProps {
@@ -81,11 +82,31 @@ export function AutoplayVideo({ src, poster, className = "" }: AutoplayVideoProp
 
   const fallbackPoster = poster || "/brand/hero-mockup-gold.png";
 
+  const isCloudflareUid = src && !src.includes("/") && !src.includes(".") && src.length >= 30;
+
   return (
     <div ref={containerRef} className={cn("relative w-full h-full overflow-hidden bg-brand-surface", className)}>
       {/* Video element */}
       {!hasError && src ? (
-        (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')) ? (
+        isCloudflareUid ? (
+          <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden scale-[1.05]">
+            <Stream
+              src={src}
+              autoplay={isInView}
+              muted={true}
+              loop={true}
+              controls={false}
+              responsive={false}
+              className="absolute inset-0 w-full h-full object-cover object-center"
+              // @ts-ignore
+              onError={() => {
+                setHasError(true);
+                setIsPlaying(false);
+              }}
+              onPlay={() => setIsPlaying(true)}
+            />
+          </div>
+        ) : (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')) ? (
           <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden scale-[1.3]">
             <ReactPlayer
               url={src}
