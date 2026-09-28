@@ -134,6 +134,25 @@ export async function removeMedia(id: string, uid: string, provider: string) {
   return { success: true }
 }
 
+export async function renameMedia(id: string, newFilename: string) {
+  await requireAuth(['super_admin', 'admin', 'editor'])
+  const supabase = await createClient()
+
+  try {
+    const { error } = await (supabase.from('media') as any)
+      .update({ filename: newFilename })
+      .eq('id', id)
+    
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/', 'layout')
+    revalidatePath('/admin/media')
+    return { success: true }
+  } catch (error: any) {
+    return { error: error.message }
+  }
+}
+
 export async function syncVideoStatus(id: string, uid: string) {
   await requireAuth(['super_admin', 'admin', 'editor'])
   const supabase = await createClient()

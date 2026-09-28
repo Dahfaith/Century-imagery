@@ -20,6 +20,8 @@ export function ProjectVideoPlayer({
   category,
   className,
 }: ProjectVideoPlayerProps) {
+  const isExternal = videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be") || videoUrl.includes("vimeo.com");
+
   return (
     <div
       className={cn(
@@ -28,15 +30,15 @@ export function ProjectVideoPlayer({
       )}
     >
       {/* Cloudflare Stream / ReactPlayer Element */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none">
+      <div className={cn("absolute inset-0 w-full h-full", !isExternal && "pointer-events-none")}>
         <CloudflareStreamPlayer
           videoId={videoUrl}
           poster={posterImage}
-          autoplay={true}
-          loop={true}
-          muted={true}
-          controls={false}
-          className="absolute inset-0 w-full h-full object-cover scale-[1.02]"
+          autoplay={!isExternal}
+          loop={!isExternal}
+          muted={!isExternal}
+          controls={isExternal}
+          className={cn("absolute inset-0 w-full h-full object-cover", !isExternal && "scale-[1.02]")}
         />
       </div>
 

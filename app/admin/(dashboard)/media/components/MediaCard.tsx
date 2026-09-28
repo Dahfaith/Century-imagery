@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Film, Image as ImageIcon, Copy, Check, Eye, X, ExternalLink, Calendar, HardDrive, Maximize2 } from 'lucide-react'
-import { DeleteMediaButton, SyncMediaButton } from './MediaActions'
+import { DeleteMediaButton, SyncMediaButton, RenameMediaButton } from './MediaActions'
 import ReactPlayer from 'react-player'
 
 export interface MediaItem {
@@ -164,6 +164,8 @@ export function MediaCard({ item }: { item: MediaItem }) {
               <SyncMediaButton id={item.id} uid={item.provider_asset_id} />
             )}
             
+            <RenameMediaButton id={item.id} currentFilename={item.filename} />
+
             <DeleteMediaButton 
               id={item.id} 
               uid={item.provider_asset_id || ''} 

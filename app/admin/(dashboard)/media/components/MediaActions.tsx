@@ -1,8 +1,8 @@
 'use client'
 
 import { useActionState } from 'react'
-import { removeMedia, syncVideoStatus } from '../actions'
-import { Loader2, Trash2, RefreshCw } from 'lucide-react'
+import { removeMedia, syncVideoStatus, renameMedia } from '../actions'
+import { Loader2, Trash2, RefreshCw, Edit2 } from 'lucide-react'
 
 export function DeleteMediaButton({ id, uid, provider, filename }: { id: string, uid: string, provider: string, filename: string }) {
   const [state, formAction, isPending] = useActionState(
@@ -54,3 +54,34 @@ export function SyncMediaButton({ id, uid }: { id: string, uid: string }) {
     </form>
   )
 }
+
+export function RenameMediaButton({ id, currentFilename }: { id: string, currentFilename: string }) {
+  const [state, formAction, isPending] = useActionState(
+    async () => {
+      const newName = window.prompt('Enter new filename:', currentFilename)
+      if (newName && newName.trim() !== '' && newName.trim() !== currentFilename) {
+        const res = await renameMedia(id, newName.trim())
+        if (res.error) {
+          alert(res.error)
+        }
+      }
+      return null
+    },
+    null
+  )
+
+  return (
+    <form action={formAction}>
+      <button 
+        type="submit" 
+        disabled={isPending}
+        onClick={(e) => e.stopPropagation()}
+        className="p-1.5 rounded-lg bg-black/80 backdrop-blur-md border border-brand-border text-brand-cream hover:text-brand-gold hover:border-brand-gold/50 transition-colors shadow-lg disabled:opacity-50"
+        title="Rename media"
+      >
+        {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Edit2 className="w-3.5 h-3.5" />}
+      </button>
+    </form>
+  )
+}
+
