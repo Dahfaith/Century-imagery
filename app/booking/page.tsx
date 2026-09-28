@@ -219,7 +219,7 @@ export default async function BookingPage() {
                   </div>
                 }
               >
-                <BookingForm />
+                <BookingForm budgetOptions={settings?.budget_options || undefined} />
               </Suspense>
             </div>
           </div>

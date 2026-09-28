@@ -59,7 +59,7 @@ const disciplineOptions = [
   "Full-Service Turnkey Production (Multi-Discipline)",
 ];
 
-const budgetOptions = [
+const DEFAULT_BUDGET_OPTIONS = [
   "₦5,000,000 – ₦15,000,000 (Commercial / Post Lab)",
   "₦15,000,000 – ₦35,000,000 (Brand Film / Music Video)",
   "₦35,000,000 – ₦75,000,000 (Feature Unit / State Protocol)",
@@ -76,7 +76,8 @@ const referralOptions = [
   "Previous Century Client",
 ];
 
-export function BookingForm() {
+export function BookingForm({ budgetOptions: propBudgetOptions }: { budgetOptions?: string[] }) {
+  const budgetOptions = propBudgetOptions && propBudgetOptions.length > 0 ? propBudgetOptions : DEFAULT_BUDGET_OPTIONS;
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
@@ -98,7 +99,12 @@ export function BookingForm() {
         setFormData((prev) => ({ ...prev, discipline: matched }));
       }
     }
-  }, [searchParams]);
+    
+    // Set default budget if the initial one is not in the options
+    if (budgetOptions.length > 0 && !budgetOptions.includes(formData.budget)) {
+      setFormData((prev) => ({ ...prev, budget: budgetOptions[0] }));
+    }
+  }, [searchParams, budgetOptions]);
 
   const handleChange = (
     e: React.ChangeEvent<

@@ -85,6 +85,7 @@ export interface SiteSettings {
   seo_title?: string
   seo_description?: string
   seo_image_url?: string
+  budget_options?: string[]
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────

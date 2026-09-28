@@ -28,6 +28,7 @@ export function SiteSettingsForm({ initialData, media }: { initialData: any, med
     seo_title: initialData.seo_title || '',
     seo_description: initialData.seo_description || '',
     seo_image_url: initialData.seo_image_url || '',
+    budget_options: Array.isArray(initialData.budget_options) ? initialData.budget_options.join('\n') : '',
   })
 
   const update = (key: string) => (e: any) =>
@@ -38,7 +39,15 @@ export function SiteSettingsForm({ initialData, media }: { initialData: any, med
     setLoading(true)
     setError('')
     setSuccess('')
-    const res = await saveSiteSettings(form)
+
+    const payload = {
+      ...form,
+      budget_options: form.budget_options
+        ? form.budget_options.split('\n').map(s => s.trim()).filter(Boolean)
+        : null
+    }
+
+    const res = await saveSiteSettings(payload)
     if (res?.error) {
       setError(res.error)
     } else {
@@ -150,6 +159,26 @@ export function SiteSettingsForm({ initialData, media }: { initialData: any, med
               <input type="url" value={(form as any)[key]} onChange={update(key)} placeholder="https://..." className={inputClass} />
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Booking Options */}
+      <div className="bg-brand-surface-card border border-brand-border rounded-xl p-6 space-y-5">
+        <h2 className="text-lg font-display font-medium text-brand-cream border-b border-brand-border pb-3">
+          Booking Form Options
+        </h2>
+        <p className="text-xs text-brand-muted">Configure the dropdown values for the client booking form.</p>
+        <div className="space-y-4">
+          <div>
+            <label className={labelClass}>Budget Options (one per line)</label>
+            <textarea 
+              value={form.budget_options} 
+              onChange={update('budget_options')} 
+              rows={6} 
+              placeholder="₦5,000,000 – ₦15,000,000 (Commercial)&#10;Flexible / Custom Treatment Workshop"
+              className={inputClass} 
+            />
+          </div>
         </div>
       </div>
 

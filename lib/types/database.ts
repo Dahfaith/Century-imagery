@@ -58,6 +58,7 @@ export interface Database {
           seo_title: string | null
           seo_description: string | null
           seo_image_url: string | null
+          budget_options: string[] | null
           created_at: string | null
           updated_at: string | null
         }
@@ -80,6 +81,7 @@ export interface Database {
           seo_title?: string | null
           seo_description?: string | null
           seo_image_url?: string | null
+          budget_options?: string[] | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -102,6 +104,7 @@ export interface Database {
           seo_title?: string | null
           seo_description?: string | null
           seo_image_url?: string | null
+          budget_options?: string[] | null
           created_at?: string | null
           updated_at?: string | null
         }
