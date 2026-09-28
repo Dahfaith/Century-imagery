@@ -11,21 +11,21 @@ interface WorkPortfolioGridProps {
   initialProjects: PublicProject[];
 }
 
-const CATEGORY_KEYS: { id: string; label: string }[] = [
-  { id: "ALL", label: "ALL" },
-  { id: "ENTERTAINMENT", label: "ENTERTAINMENT & NIGHTLIFE" },
-  { id: "DOCUMENTARY", label: "PUBLIC SECTOR & DOCS" },
-  { id: "MUSIC", label: "MUSIC & CONCERTS" },
-  { id: "CORPORATE", label: "CORPORATE & TECH" },
-  { id: "CULTURAL", label: "CULTURAL & VIP" },
-];
-
 export function WorkPortfolioGrid({ initialProjects }: WorkPortfolioGridProps) {
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
 
   // Compute dynamic category counts
   const categoryFilters = useMemo(() => {
-    return CATEGORY_KEYS.map((cat) => {
+    const uniqueCategories = Array.from(new Set(initialProjects.map(p => p.category).filter(Boolean)));
+    const dynamicKeys = [
+      { id: "ALL", label: "ALL" },
+      ...uniqueCategories.map(cat => ({
+        id: cat,
+        label: cat.toUpperCase()
+      }))
+    ];
+
+    return dynamicKeys.map((cat) => {
       if (cat.id === "ALL") {
         return { ...cat, count: initialProjects.length };
       }

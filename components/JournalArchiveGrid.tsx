@@ -11,17 +11,13 @@ interface JournalArchiveGridProps {
   initialArticles: PublicJournalArticle[];
 }
 
-const CATEGORIES = [
-  "ALL",
-  "Cinematography",
-  "Director's Notes",
-  "Behind The Scenes",
-  "Culture",
-  "Campaigns",
-];
-
 export function JournalArchiveGrid({ initialArticles }: JournalArchiveGridProps) {
   const [activeCategory, setActiveCategory] = useState("ALL");
+
+  const dynamicCategories = useMemo(() => {
+    const unique = Array.from(new Set(initialArticles.map(a => a.category).filter(Boolean)));
+    return ["ALL", ...unique];
+  }, [initialArticles]);
 
   const filteredArticles = useMemo(() => {
     if (activeCategory === "ALL") return initialArticles;
@@ -35,7 +31,7 @@ export function JournalArchiveGrid({ initialArticles }: JournalArchiveGridProps)
       {/* Category Filter Tabs - Minimal Editorial */}
       <div className="border-b border-brand-border/40 pb-2 overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-6 sm:gap-8 min-w-max">
-          {CATEGORIES.map((cat) => {
+          {dynamicCategories.map((cat) => {
             const isActive = activeCategory === cat;
             const count =
               cat === "ALL"

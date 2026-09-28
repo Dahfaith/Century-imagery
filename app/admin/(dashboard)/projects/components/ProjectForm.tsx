@@ -26,7 +26,12 @@ const CATEGORIES = [
   'Luxury Event',
   'Music Visualizers',
   'Fashion',
-  'Photography'
+  'Photography',
+  'ENTERTAINMENT & NIGHTLIFE',
+  'PUBLIC SECTOR & DOCS',
+  'MUSIC & CONCERTS',
+  'CORPORATE & TECH',
+  'CULTURAL & VIP'
 ]
 
 type Project = any // Will be properly typed from DB
@@ -295,16 +300,18 @@ export function ProjectForm({
 
             <div className="space-y-2">
               <label className="text-xs font-medium text-brand-muted uppercase tracking-wider block">Category</label>
-              <select
+              <input
                 name="category"
+                list="category-options"
                 defaultValue={project?.category || ''}
+                placeholder="e.g. Corporate & Tech"
                 className="w-full bg-brand-surface-elevated border border-brand-border text-brand-cream px-4 py-2 rounded-lg focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 text-sm transition-colors"
-              >
-                <option value="">Select a category</option>
+              />
+              <datalist id="category-options">
                 {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat} />
                 ))}
-              </select>
+              </datalist>
             </div>
 
             <div className="space-y-2">
