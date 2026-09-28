@@ -182,7 +182,7 @@ export const getPageBySlug = cache(async (slug: string): Promise<PublicPage | nu
           Object.keys(section).forEach((k) => {
             if ((k.endsWith('_media_id') || k === 'media_id') && mediaMap.has(section[k])) {
               const m = mediaMap.get(section[k])
-              const urlKey = k.replace('_media_id', '_url').replace('media_id', 'media_url')
+              const urlKey = k.replace('_media_id', '_media_url').replace('media_id', 'media_url')
               if (m.provider === 'cloudflare_stream' && m.provider_asset_id) {
                 section[urlKey] = m.provider_asset_id
               } else {

@@ -16,6 +16,9 @@ const PAGE_SCHEMAS: Record<string, any> = {
       { key: 'cta_link', label: 'CTA Link', type: 'text' },
       { key: 'video_media_id', label: 'Background Video', type: 'media' },
     ],
+    showreel: [
+      { key: 'video_media_id', label: 'Showreel Video', type: 'media' },
+    ],
     about_preview: [
       { key: 'heading', label: 'About Section Heading', type: 'text' },
       { key: 'text', label: 'About Text', type: 'textarea' },

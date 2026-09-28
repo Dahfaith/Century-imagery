@@ -34,6 +34,7 @@ export default async function Home() {
   const articles = await getJournalPosts(3);
   const page = await getPageBySlug("home");
   const heroVideoUrl = page?.content?.hero?.video_media_url;
+  const showreelVideoUrl = page?.content?.showreel?.video_media_url;
 
   return (
     <main className="min-h-screen bg-brand-black text-brand-cream relative selection:bg-brand-gold selection:text-brand-black">
@@ -53,7 +54,7 @@ export default async function Home() {
       <ServicesPreview services={services} />
 
       {/* Section 5: Studio Cinematic Showreel */}
-      <Showreel />
+      <Showreel reelVideoUrl={showreelVideoUrl} />
 
       {/* Section 6: About Century Imagery LLC */}
       <AboutPreview />
