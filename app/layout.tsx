@@ -53,6 +53,9 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: settings?.favicon_url || "/favicon.svg",
     },
+    verification: {
+      google: "dFFrmXKZMblj6hhlDZaDsegkEoZ65qpqfwPVWPqB_Z0",
+    },
   };
 }
 
