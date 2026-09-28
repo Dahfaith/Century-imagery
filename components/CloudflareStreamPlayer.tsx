@@ -52,7 +52,7 @@ export function CloudflareStreamPlayer({
   }, [autoplay, muted, videoId]);
 
   // If the videoId is a full URL or local path, we render a standard video tag or ReactPlayer
-  if (videoId.includes("http") || videoId.includes("/") || videoId.endsWith(".mp4") || videoId.toLowerCase().endsWith(".mov")) {
+  if (videoId.includes("http") || videoId.includes("/") || videoId.toLowerCase().endsWith(".mp4") || videoId.toLowerCase().endsWith(".mov")) {
     const isYouTubeOrVimeo = videoId.includes('youtube.com') || videoId.includes('youtu.be') || videoId.includes('vimeo.com');
     const mp4Url = videoId.toLowerCase().endsWith(".mov")
       ? videoId.replace(/\.mov$/i, ".mp4")

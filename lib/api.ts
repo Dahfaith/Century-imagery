@@ -91,8 +91,11 @@ export interface SiteSettings {
 
 function fixExtension(url: string | null | undefined): string | undefined {
   if (!url) return undefined
-  // Vercel is case-sensitive, fix seeded legacy .MP4 / .MOV paths to lowercase .mp4
-  return url.replace(/\.MP4$/i, '.mp4').replace(/\.MOV$/i, '.mp4')
+  // Vercel is case-sensitive, fix seeded legacy .MP4 / .MOV paths to lowercase .mp4 ONLY for local files
+  if (url.startsWith('/')) {
+    return url.replace(/\.MP4$/i, '.mp4').replace(/\.MOV$/i, '.mp4')
+  }
+  return url
 }
 
 function getMediaUrl(mediaRecord: any): string {
@@ -278,7 +281,7 @@ function mapProject(dbProject: any): PublicProject {
   // For other projects: use their real video from DB hero_media, cover_media (if video), or canonical localhost fallback.
   let heroVideo: string | undefined = undefined
   if (dbProject.slug === 'rebel-empire-osogbo') {
-    if (heroMedia && heroMedia.filename !== 'hero.MP4' && heroMedia.media_type === 'video') {
+    if (heroMedia && heroMedia.filename.toLowerCase() !== 'hero.mp4' && heroMedia.media_type === 'video') {
       heroVideo = getVideoUrl(heroMedia)
     } else {
       heroVideo = undefined
