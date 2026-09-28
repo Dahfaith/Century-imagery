@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { CloudflareStreamPlayer } from "./CloudflareStreamPlayer";
 
@@ -19,58 +19,8 @@ export function VideoBackground({
   overlayOpacity = "bg-black/35",
   className,
 }: VideoBackgroundProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Strict mobile autoplay requirements:
-    // 1. Programmatically mute before calling play
-    video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-
-    const attemptPlay = () => {
-      video
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {
-          // If browser policy blocks autoplay initially, listen for first touch/interaction
-          const handleFirstInteraction = () => {
-            if (videoRef.current) {
-              videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-            }
-            window.removeEventListener("touchstart", handleFirstInteraction);
-            window.removeEventListener("scroll", handleFirstInteraction);
-            window.removeEventListener("click", handleFirstInteraction);
-          };
-
-          window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
-          window.addEventListener("scroll", handleFirstInteraction, { passive: true });
-          window.addEventListener("click", handleFirstInteraction, { passive: true });
-        });
-    };
-
-    attemptPlay();
-  }, [desktopVideoUrl, mobileVideoUrl]);
-
   return (
     <div className={cn("absolute inset-0 w-full h-full overflow-hidden select-none bg-brand-black", className)}>
-      {/* Background Poster (visible immediately, fades when playing) */}
-      <div
-        className={cn(
-          "absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700",
-          isPlaying ? "opacity-0" : "opacity-100"
-        )}
-        style={{
-          backgroundImage: `url('${posterUrl}')`,
-          backgroundPosition: "center center",
-        }}
-        aria-hidden="true"
-      />
-
       {/* HTML5 Optimized Video Player / Cloudflare Stream */}
       <div className="absolute inset-0 w-full h-full">
         <CloudflareStreamPlayer
