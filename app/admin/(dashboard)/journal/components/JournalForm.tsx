@@ -131,7 +131,7 @@ export function JournalForm({
             <input 
               type="text" 
               value={slug} 
-              onChange={(e) => setSlug(e.target.value)}
+              onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/(^-|-$)+/g, ''))}
               required
               className="w-full bg-brand-surface border border-brand-border rounded-lg p-2.5 sm:p-3 text-xs sm:text-sm text-brand-cream focus:border-brand-gold outline-none transition-colors font-mono"
             />

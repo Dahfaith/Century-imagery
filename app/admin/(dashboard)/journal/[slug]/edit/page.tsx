@@ -8,10 +8,11 @@ export default async function EditJournalPage({ params }: { params: Promise<{ sl
   const supabase = await createClient()
 
   const { slug } = await params
+  const decodedSlug = decodeURIComponent(slug)
 
   const { data: post, error: postError } = await (supabase.from('journal_posts') as any)
     .select('*')
-    .eq('slug', slug)
+    .eq('slug', decodedSlug)
     .single()
 
   if (postError || !post) {

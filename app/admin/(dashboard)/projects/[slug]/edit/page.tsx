@@ -13,11 +13,13 @@ export default async function EditProjectPage({ params }: { params: Promise<{ sl
   const { slug } = await params
   const supabase = await createClient()
 
+  const decodedSlug = decodeURIComponent(slug)
+
   // Fetch project
   const { data: project } = await supabase
     .from('projects')
     .select('*')
-    .eq('slug', slug)
+    .eq('slug', decodedSlug)
     .single()
 
   if (!project) {
