@@ -1,12 +1,12 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import { BrandLogo } from "./BrandLogo";
-import { ArrowUpRight, Instagram, Youtube, Film, Sparkles } from "lucide-react";
+import { ArrowUpRight, Instagram, Youtube, Film, Facebook, Linkedin } from "lucide-react";
+import { getSiteSettings } from "@/lib/api";
 
-export function Footer() {
+export async function Footer() {
   const currentYear = new Date().getFullYear();
+  const settings = await getSiteSettings();
 
   return (
     <footer className="w-full bg-brand-black text-brand-cream border-t border-brand-border/70 relative overflow-hidden">
@@ -23,7 +23,7 @@ export function Footer() {
           <div className="lg:col-span-5 space-y-6">
             <BrandLogo size="md" variant="gold" linkToHome />
             <p className="text-xs sm:text-sm text-brand-muted max-w-sm font-sans leading-relaxed">
-              Century Imagery LLC is a distinguished motion picture studio where narrative precision meets cinematic artistry. We architect evocative visual legacies for discerning brands, icons, and celebrations.
+              {settings?.site_description || "Century Imagery LLC is a distinguished motion picture studio where narrative precision meets cinematic artistry."}
             </p>
             <div className="space-y-2 pt-2 text-xs font-mono text-brand-muted">
               <div className="flex items-center gap-2 text-brand-gold">
@@ -31,25 +31,31 @@ export function Footer() {
                 <span className="font-semibold uppercase tracking-wider">STUDIO HEADQUARTERS</span>
               </div>
               <p className="text-zinc-400 font-sans text-xs">
-                No 6 Zone A, Road 3, Olonde, Ologuneru, Ibadan, Nigeria
+                {settings?.address || "Ibadan, Nigeria"}
               </p>
               <p className="text-brand-gold/80 font-mono text-[11px]">
                 Ibadan Headquarters &bull; Lagos Deployments &bull; Worldwide
               </p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 pt-1">
-                <a
-                  href="mailto:Centuryimagery@gmail.com"
-                  className="text-brand-cream hover:text-brand-gold transition-colors font-mono"
-                >
-                  Centuryimagery@gmail.com
-                </a>
-                <span className="hidden sm:inline text-zinc-600">&bull;</span>
-                <a
-                  href="tel:+2348190041071"
-                  className="text-brand-cream hover:text-brand-gold transition-colors font-mono"
-                >
-                  08190041071
-                </a>
+                {settings?.email && (
+                  <>
+                    <a
+                      href={`mailto:${settings.email}`}
+                      className="text-brand-cream hover:text-brand-gold transition-colors font-mono break-all"
+                    >
+                      {settings.email}
+                    </a>
+                    {settings.phone && <span className="hidden sm:inline text-zinc-600">&bull;</span>}
+                  </>
+                )}
+                {settings?.phone && (
+                  <a
+                    href={`tel:${settings.phone.replace(/\D/g, '')}`}
+                    className="text-brand-cream hover:text-brand-gold transition-colors font-mono"
+                  >
+                    {settings.phone}
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -124,46 +130,74 @@ export function Footer() {
         <div className="border-y border-brand-border/60 py-6 sm:py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="text-sm sm:text-base md:text-lg font-display font-bold tracking-widest uppercase text-brand-cream">
             <span className="text-brand-gold">&gt; </span>
-            <span>A CENTURY IMAGERY LLC PRODUCTION — </span>
-            <span className="text-brand-gold">WE DIRECT CINEMA.</span>
+            <span>{settings?.site_name || "A CENTURY IMAGERY LLC PRODUCTION"} — </span>
+            <span className="text-brand-gold">{settings?.footer_tagline || "WE DIRECT CINEMA."}</span>
           </div>
 
           {/* Social placeholder handles */}
           <div className="flex items-center gap-3">
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
-              aria-label="Instagram"
-            >
-              <Instagram className="w-4 h-4" />
-            </a>
-            <a
-              href="https://vimeo.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
-              aria-label="Vimeo"
-            >
-              <Film className="w-4 h-4" />
-            </a>
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
-              aria-label="YouTube"
-            >
-              <Youtube className="w-4 h-4" />
-            </a>
+            {settings?.instagram_url && (
+              <a
+                href={settings.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+            )}
+            {settings?.youtube_url && (
+              <a
+                href={settings.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
+                aria-label="YouTube"
+              >
+                <Youtube className="w-4 h-4" />
+              </a>
+            )}
+            {settings?.facebook_url && (
+              <a
+                href={settings.facebook_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+            )}
+            {settings?.linkedin_url && (
+              <a
+                href={settings.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="w-4 h-4" />
+              </a>
+            )}
+            {settings?.tiktok_url && (
+              <a
+                href={settings.tiktok_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-gold hover:text-brand-gold text-brand-cream transition-colors"
+                aria-label="TikTok"
+              >
+                <Film className="w-4 h-4" />
+              </a>
+            )}
           </div>
         </div>
 
         {/* Bottom Bar: Copyright & VisioReach Credit */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-muted font-mono pt-2">
           <div>
-            &copy; {currentYear} Century Imagery LLC. All rights reserved.
+            &copy; {currentYear} {settings?.site_name || "Century Imagery LLC"}. All rights reserved.
           </div>
 
           {/* MANDATORY VISIOREACH CREDIT */}
